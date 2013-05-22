@@ -8,13 +8,13 @@ import com.ra1ph.getpic.database.DBHelper.Writable;
 public class Message implements Writable {
 	public String user_id,body;
 	int direction;
-	enum MessageType {TEXT, IMAGE};
+	public enum MessageType {TEXT, IMAGE};
 	public MessageType type;
 	
 	final static String USER_ID = "user_id";
 	final static String DIRECTION = "direction";
 	final static String BODY = "body";
-	final static String IS_PICTURE = "is_picure";
+	final static String IS_PICTURE = "is_picture";
 	public final static int DIRECTION_OUT = 0;
 	public final static int DIRECTION_IN = 1;
 	final static String TABLE_NAME = "messages";

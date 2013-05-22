@@ -18,7 +18,8 @@ public class XMPPService extends Service {
 
 	private static final String SERVICE_THREAD_NAME = "myThread";
 	XMPPTask task;
-	public static final int NEW_MESSAGE = 0x010;
+	public static final int NEW_TEXT_MESSAGE = 0x010;
+	public static final int NEW_IMAGE_MESSAGE = 0x020;
 	
 	public static final String CODE_ACTION = "code_action";
 	public static final String MESSAGE_TO = "message_to";
@@ -28,17 +29,22 @@ public class XMPPService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
+		com.ra1ph.getpic.message.Message mes;
 		int code = intent.getIntExtra(CODE_ACTION, 0);
 		switch(code){
-		case NEW_MESSAGE:
-			Message mes = new Message();
-			mes.setBody(intent.getStringExtra(MESSAGE_BODY));
-			mes.setTo(intent.getStringExtra(MESSAGE_TO));
+		case NEW_TEXT_MESSAGE:
+			mes = new com.ra1ph.getpic.message.Message(intent.getStringExtra(MESSAGE_TO), intent.getStringExtra(MESSAGE_BODY), com.ra1ph.getpic.message.Message.DIRECTION_OUT);
+			mes.type = com.ra1ph.getpic.message.Message.MessageType.TEXT;
+			task.addMessage(mes);
+			break;
+		case NEW_IMAGE_MESSAGE:
+			mes = new com.ra1ph.getpic.message.Message(intent.getStringExtra(MESSAGE_TO), intent.getStringExtra(MESSAGE_BODY), com.ra1ph.getpic.message.Message.DIRECTION_OUT);
+			mes.type = com.ra1ph.getpic.message.Message.MessageType.IMAGE;
 			task.addMessage(mes);
 			break;
 		
 		}
-		return super.onStartCommand(intent, flags, startId);
+		return START_STICKY;
 	}
 	
 	@Override

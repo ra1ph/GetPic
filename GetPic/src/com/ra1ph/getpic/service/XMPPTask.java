@@ -2,9 +2,13 @@ package com.ra1ph.getpic.service;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
+import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
@@ -19,7 +23,10 @@ import org.jivesoftware.smackx.PrivateDataManager;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.filetransfer.FileTransfer;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
+import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
@@ -45,13 +52,15 @@ import org.jivesoftware.smackx.search.UserSearch;
 import com.ra1ph.getpic.Constants;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.Writable;
+import com.ra1ph.getpic.message.Message.MessageType;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
-public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> implements PacketListener {
+public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> implements PacketListener, MessageListener, ChatManagerListener, FileTransferListener {
 
 	private static final long TIME_SLEEP = 100;
 	ConnectionConfiguration config;
@@ -60,15 +69,16 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 	DBHelper helper;
 	String login,pass;
 	Context context;
-	LinkedList<Message> messages;
-	boolean isActive=true;
+	ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
+	AtomicBoolean isActive=new AtomicBoolean();
 	
 	public XMPPTask(Context context, String login, String pass) {
 		// TODO Auto-generated constructor stub
 		this.login=login;
 		this.pass=pass;
 		this.context=context;
-		messages = new LinkedList<Message>();
+		isActive.set(true);
+		messages = new ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message>();
 	}
 	
 	
@@ -76,23 +86,21 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 	protected Void doInBackground(Void... params) {
 		// TODO Auto-generated method stub
 		connect(login,pass);
-		Chat chat = createChat("ra1ph@jabber.ru");
-		try {
-			chat.sendMessage("Hello!");
-		} catch (XMPPException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		helper = DBHelper.getInstance(context);
 		
 		
-		while(isActive){
-			Message mes=null;
-			synchronized(messages){
+		while(isActive.get()){
+			com.ra1ph.getpic.message.Message mes=null;
 				mes = messages.poll();				
+			if(mes!=null){
+				if(mes.type==MessageType.TEXT){
+					Message message = new Message();
+					message.setBody(mes.body);
+					message.setTo(mes.user_id);
+					connection.sendPacket(message);
+				}else if(mes.type==MessageType.IMAGE){
+					fileTransfer(new File(context.getCacheDir(),mes.body), mes.user_id);
 				}
-			if(mes!=null){	
-				connection.sendPacket(mes);
 				
 			} else
 				try {
@@ -108,6 +116,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 		configure(ProviderManager.getInstance());
 
 		config = new ConnectionConfiguration("jabber.ru", 5222, "jabber.ru");
+		config.setDebuggerEnabled(true);
 
 		XMPPConnection.DEBUG_ENABLED = true;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -125,10 +134,13 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 		}
 
 		connection = new XMPPConnection(config);
-		connection.DEBUG_ENABLED = true;
+		//connection.DEBUG_ENABLED = true;
 		try {
 			connection.connect();
 			connection.login(login, pass);
+			new ServiceDiscoveryManager(connection);
+			FileTransferManager manager = new FileTransferManager(connection);
+			manager.addFileTransferListener(this);
 			connection.addPacketListener(this, null);
 			chatManager = connection.getChatManager();
 		} catch (XMPPException e) {
@@ -149,7 +161,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 	}
 
 	public void fileTransfer(File file, String user_id) {
-		new ServiceDiscoveryManager(connection);
+		
 		FileTransferManager manager = new FileTransferManager(connection);
 		OutgoingFileTransfer transfer = manager
 				.createOutgoingFileTransfer(user_id);
@@ -337,11 +349,73 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 				new AdHocCommandDataProvider.SessionExpiredError());
 	}
 
+	public void addMessage(com.ra1ph.getpic.message.Message mes){
+		messages.add(mes);
+	}
+
+
+	@Override
+	public void fileTransferRequest(final FileTransferRequest request) {
+		// TODO Auto-generated method stub
+		new Thread(){
+	         @Override
+	         public void run() {
+	            IncomingFileTransfer transfer = request.accept();
+	            File mf = Environment.getExternalStorageDirectory();
+	            String name = UUID.randomUUID().toString();
+	            File file = new File(context.getCacheDir(),name);
+	            try{
+	                transfer.recieveFile(file);
+	                while(!transfer.isDone()) {
+	                   try{
+	                      Thread.sleep(1000L);
+	                   }catch (Exception e) {
+	                      Log.e(Constants.DEBUG_TAG, e.getMessage());
+	                   }
+	                   if(transfer.getStatus().equals(FileTransfer.Status.error)) {
+	                      Log.e(Constants.DEBUG_TAG, transfer.getError() + "");
+	                   }
+	                   if(transfer.getException() != null) {
+	                      transfer.getException().printStackTrace();
+	                   }
+	                }
+	                com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(request.getRequestor(),name,com.ra1ph.getpic.message.Message.DIRECTION_IN);
+	                mes.type = MessageType.IMAGE;
+	                helper.addMessage(mes);
+	                
+	             }catch (Exception e) {
+	                Log.e(Constants.DEBUG_TAG, e.getMessage());
+	            }
+	         };
+	       }.start();
+	}
+
+
+	@Override
+	public void chatCreated(Chat chat, boolean arg1) {
+		// TODO Auto-generated method stub
+		chat.addMessageListener(this);
+	}
+
+
+	@Override
+	public void processMessage(Chat arg0, Message arg1) {
+		// TODO Auto-generated method stub
+			Message message = arg1;
+			if(message.getBody()!=null){
+			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
+					message.getFrom(), message.getBody(),
+					com.ra1ph.getpic.message.Message.DIRECTION_IN);
+			helper.addMessage(mes);
+			}
+	}
+
 
 	@Override
 	public void processPacket(Packet arg0) {
 		// TODO Auto-generated method stub
 		if(arg0 instanceof Message){
+			Log.d(Constants.DEBUG_TAG,"Packet in!");
 			Message message = (Message) arg0;
 			if(message.getBody()!=null){
 			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
@@ -349,12 +423,6 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 					com.ra1ph.getpic.message.Message.DIRECTION_IN);
 			helper.addMessage(mes);
 			}
-		}
-	}
-	
-	public void addMessage(Message mes){
-		synchronized (messages) {
-			messages.add(mes);
 		}
 	}
 
