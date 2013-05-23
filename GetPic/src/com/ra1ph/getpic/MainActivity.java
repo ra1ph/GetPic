@@ -6,20 +6,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.simonvt.menudrawer.MenuDrawer;
+
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.LoadListener;
+import com.ra1ph.getpic.database.DBLoader;
 import com.ra1ph.getpic.message.Message;
 import com.ra1ph.getpic.service.XMPPService;
 import com.ra1ph.getpic.users.User;
 
 import android.os.Bundle;
-import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -30,7 +34,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-public class MainActivity extends Activity implements LoadListener{
+public class MainActivity extends FragmentActivity implements LoadListener{
 
 	private static final String PREFS_NAME="prefs";
 	private static final int CAMERA_PIC_REQUEST = 2500;
@@ -41,12 +45,23 @@ public class MainActivity extends Activity implements LoadListener{
 	DBHelper helper;
 	ArrayList<User> items;
 	ImageListAdapter adapter;
+	private MenuDrawer mMenuDrawer;
 	
 	private static final String BOT_JID = "ra1ph@jabber.ru/Smack";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_WINDOW);
+		mMenuDrawer.setContentView(R.layout.activity_main);
+		mMenuDrawer.setMenuView(R.layout.menu);
+
+		/*MenuFragment menu = (MenuFragment)getSupportFragmentManager().findFragmentById(R.id.f_menu);
+		menu.getListView().setOnItemClickListener(this);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+		
 		setContentView(R.layout.activity_main);
 		
 		mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
@@ -56,6 +71,8 @@ public class MainActivity extends Activity implements LoadListener{
 		items = new ArrayList<User>();
 		adapter = new ImageListAdapter(this,items);
 		imageList.setAdapter(adapter);
+		
+		User.getUsers(this, helper);
 		
 		Intent i = new Intent(MainActivity.this, XMPPService.class);
 		startService(i);
@@ -131,6 +148,7 @@ public class MainActivity extends Activity implements LoadListener{
 	public void onLoadListener(Object object) {
 		// TODO Auto-generated method stub
 		items = (ArrayList<User>) object;
+		adapter.items = items;
 		adapter.notifyDataSetChanged();
 	}
 

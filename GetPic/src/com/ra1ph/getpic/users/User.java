@@ -63,11 +63,12 @@ public class User implements Writable,Loadable {
 		return users;
 	}
 	
-	public void getUsers(LoadListener listener,DBHelper helper){
+	public static void getUsers(LoadListener listener,DBHelper helper){
 		DBLoader loader = new DBLoader(helper);
+		User user = new User("", "");
 		loader.tableName=TABLE_NAME;
 		loader.setListener(listener);
-		loader.setProcessor(this);
+		loader.setProcessor(user);
 		loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);		
 	}
 }
