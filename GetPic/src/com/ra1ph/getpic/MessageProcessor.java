@@ -30,6 +30,7 @@ public class MessageProcessor extends com.ra1ph.getpic.AsyncTask<Void, Void, Voi
 			if(write!=null){	
 				synchronized(db){
 				write.saveToDB(db);
+				if(write instanceof com.ra1ph.getpic.message.Message)
 				Log.d(Constants.DEBUG_TAG, "bla bla bla "+((com.ra1ph.getpic.message.Message)write).body);
 				}
 			} else

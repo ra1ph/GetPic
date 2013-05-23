@@ -1,5 +1,6 @@
 package com.ra1ph.getpic.database;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.ra1ph.getpic.AsyncTask;
@@ -8,6 +9,7 @@ import com.ra1ph.getpic.MessageProcessor;
 import com.ra1ph.getpic.message.Message;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -63,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		task.setBlock(isBlock);
 	}
 	
-	public void addMessage(Message mes){
+	public void addWritable(Writable mes){
 		synchronized(task.toWrite){
 			task.toWrite.add(mes);
 		}
@@ -72,6 +74,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public interface Writable{
 		public void saveToDB(SQLiteDatabase db);
+	}
+	
+	public interface LoadListener{
+		public void onLoadListener(Object object);
+	}
+	
+	public interface Loadable{
+		public Object processCursor(Cursor cursor);
 	}
 	
 }

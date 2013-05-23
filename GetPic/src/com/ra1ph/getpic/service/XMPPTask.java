@@ -53,6 +53,7 @@ import com.ra1ph.getpic.Constants;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.Writable;
 import com.ra1ph.getpic.message.Message.MessageType;
+import com.ra1ph.getpic.users.User;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -381,7 +382,9 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 	                }
 	                com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(request.getRequestor(),name,com.ra1ph.getpic.message.Message.DIRECTION_IN);
 	                mes.type = MessageType.IMAGE;
-	                helper.addMessage(mes);
+	                helper.addWritable(mes);
+	                User user = new User(request.getRequestor(),name);
+	                helper.addWritable(user);
 	                
 	             }catch (Exception e) {
 	                Log.e(Constants.DEBUG_TAG, e.getMessage());
@@ -406,7 +409,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
 					message.getFrom(), message.getBody(),
 					com.ra1ph.getpic.message.Message.DIRECTION_IN);
-			helper.addMessage(mes);
+			helper.addWritable(mes);
 			}
 	}
 
@@ -421,7 +424,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
 					message.getFrom(), message.getBody(),
 					com.ra1ph.getpic.message.Message.DIRECTION_IN);
-			helper.addMessage(mes);
+			helper.addWritable(mes);
 			}
 		}
 	}

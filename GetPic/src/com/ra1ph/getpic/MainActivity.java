@@ -4,27 +4,45 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import com.ra1ph.getpic.database.DBHelper;
+import com.ra1ph.getpic.database.DBHelper.LoadListener;
+import com.ra1ph.getpic.message.Message;
 import com.ra1ph.getpic.service.XMPPService;
+import com.ra1ph.getpic.users.User;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements LoadListener{
 
 	private static final String PREFS_NAME="prefs";
 	private static final int CAMERA_PIC_REQUEST = 2500;
 	private static final String TEMP_FILENAME = "temp";
 	private String send_user_id = null;
 	private SharedPreferences mPrefs;
+	private ListView imageList;
+	DBHelper helper;
+	ArrayList<User> items;
+	ImageListAdapter adapter;
+	
+	private static final String BOT_JID = "ra1ph@jabber.ru/Smack";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,23 +50,26 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+		imageList=(ListView) findViewById(R.id.image_list);
+		helper = new DBHelper(this);
+		SQLiteDatabase db = helper.getReadableDatabase();
+		items = new ArrayList<User>();
+		adapter = new ImageListAdapter(this,items);
+		imageList.setAdapter(adapter);
 		
-		Button btn = (Button) findViewById(R.id.button);
 		Intent i = new Intent(MainActivity.this, XMPPService.class);
 		startService(i);
-		btn.setOnClickListener(new OnClickListener() {
+		
+		ImageView shot = (ImageView) findViewById(R.id.shot_btn);
+		shot.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent i = new Intent(MainActivity.this, XMPPService.class);
-				i.putExtra(XMPPService.CODE_ACTION, XMPPService.NEW_TEXT_MESSAGE);
-				i.putExtra(XMPPService.MESSAGE_TO, "ra1ph@jabber.ru/Smack");
-				i.putExtra(XMPPService.MESSAGE_BODY, "Hello!");		
-				startService(i);
-				openCamera("ra1ph@jabber.ru/Smack");
+				openCamera(BOT_JID);
 			}
 		});
+		
 	}
 
 	@Override
@@ -104,6 +125,13 @@ public class MainActivity extends Activity {
 		i.putExtra(XMPPService.MESSAGE_TO, user_id);
 		i.putExtra(XMPPService.MESSAGE_BODY, filename);		
 		startService(i);
+	}
+
+	@Override
+	public void onLoadListener(Object object) {
+		// TODO Auto-generated method stub
+		items = (ArrayList<User>) object;
+		adapter.notifyDataSetChanged();
 	}
 
 }
