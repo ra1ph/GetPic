@@ -15,10 +15,12 @@ import com.ra1ph.getpic.database.DBHelper.LoadListener;
 import com.ra1ph.getpic.database.DBLoader;
 import com.ra1ph.getpic.database.DBHelper.Loadable;
 import com.ra1ph.getpic.database.DBHelper.Writable;
+import com.ra1ph.getpic.users.User;
 
 public class Message implements Writable, Loadable {
 	public String user_id, body;
 	int direction;
+	int Type;
 
 	public enum MessageType {
 		TEXT, IMAGE
@@ -37,32 +39,33 @@ public class Message implements Writable, Loadable {
 			+ TABLE_NAME
 			+ " ( _id INTEGER PRIMARY KEY , user_id TEXT, direction TEXT, body TEXT, is_picture BOOLEAN)";
 
-	public Message(String user_id, String body, int direction) {
+	public Message(String user_id, String body, int direction, int typeOp) {
 		this.body = body;
 		this.direction = direction;
 		this.user_id = user_id;
+		this.Type = typeOp;
 	}
 
 	@Override
 	public void saveToDB(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
+		if (this.Type == ADD) {
+			ContentValues val = new ContentValues();
+			val.put(USER_ID, user_id);
+			val.put(DIRECTION, direction);
+			val.put(BODY, body);
+			if (type == MessageType.TEXT)
+				val.put(IS_PICTURE, false);
+			else if (type == MessageType.IMAGE)
+				val.put(IS_PICTURE, true);
 
-		createTable(db);
-
-		ContentValues val = new ContentValues();
-		val.put(USER_ID, user_id);
-		val.put(DIRECTION, direction);
-		val.put(BODY, body);
-		if (type == MessageType.TEXT)
-			val.put(IS_PICTURE, false);
-		else if (type == MessageType.IMAGE)
-			val.put(IS_PICTURE, true);
-
-		db.insert(TABLE_NAME, null, val);
-
+			db.insert(TABLE_NAME, null, val);
+		} else if (this.Type == DELETE) {
+			db.delete(TABLE_NAME, USER_ID + "=?", new String[] {user_id});
+		}
 	}
 
-	private void createTable(SQLiteDatabase db) {
+	public static void createTable(SQLiteDatabase db) {
 		db.execSQL(CREATE_TABLE);
 	}
 
@@ -70,24 +73,38 @@ public class Message implements Writable, Loadable {
 	public Object processCursor(Cursor cursor) {
 		// TODO Auto-generated method stub
 		ArrayList<Message> messages = new ArrayList<Message>();
-		if(cursor.moveToFirst()){
-			do{
-				Message mes = new Message(cursor.getString(cursor.getColumnIndex(USER_ID)),cursor.getString(cursor.getColumnIndex(BODY)),cursor.getInt(cursor.getColumnIndex(DIRECTION)));
-				if(cursor.getInt(cursor.getColumnIndex(IS_PICTURE))==1)mes.type=MessageType.IMAGE;
-				else mes.type=MessageType.TEXT;
+		if (cursor.moveToFirst()) {
+			do {
+				Message mes = new Message(cursor.getString(cursor
+						.getColumnIndex(USER_ID)), cursor.getString(cursor
+						.getColumnIndex(BODY)), cursor.getInt(cursor
+						.getColumnIndex(DIRECTION)), Writable.ADD);
+				if (cursor.getInt(cursor.getColumnIndex(IS_PICTURE)) == 1)
+					mes.type = MessageType.IMAGE;
+				else
+					mes.type = MessageType.TEXT;
 				messages.add(mes);
-			}while(cursor.moveToNext());
+			} while (cursor.moveToNext());
 		}
-		
+
 		return messages;
 	}
-	
-	public void getMessages(LoadListener listener, DBHelper helper){
+
+	public void getMessages(LoadListener listener, DBHelper helper) {
 		DBLoader loader = new DBLoader(helper);
-		loader.tableName=TABLE_NAME;
+		loader.tableName = TABLE_NAME;
 		loader.setListener(listener);
 		loader.setProcessor(this);
-		loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
+		loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
-	
+
+	@Override
+	public void setType(int Type) {
+		// TODO Auto-generated method stub
+		this.Type = Type;
+	}
+
+	public static void deleteUser(String user_id, DBHelper helper) {
+		helper.addWritable(new Message(user_id, "", 0, Writable.DELETE));
+	}
 }

@@ -54,7 +54,9 @@
             android:layout_below="@id/splitter"
             android:layout_above="@id/shot_btn"
             android:layout_margin="20dip"
-            android:id="@+id/image_list"/>
+            android:id="@+id/image_list"
+            android:divider="@null"
+            android:dividerHeight="30dip"/>
         
     </RelativeLayout>
 

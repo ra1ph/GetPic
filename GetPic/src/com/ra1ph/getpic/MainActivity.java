@@ -10,33 +10,30 @@ import net.simonvt.menudrawer.MenuDrawer;
 
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.LoadListener;
-import com.ra1ph.getpic.database.DBLoader;
-import com.ra1ph.getpic.message.Message;
 import com.ra1ph.getpic.service.XMPPService;
 import com.ra1ph.getpic.users.User;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-public class MainActivity extends FragmentActivity implements LoadListener{
+public class MainActivity extends SuperActivity implements LoadListener{
 
-	private static final String PREFS_NAME="prefs";
+	public static final String PREFS_NAME="prefs";
 	private static final int CAMERA_PIC_REQUEST = 2500;
 	private static final String TEMP_FILENAME = "temp";
 	private String send_user_id = null;
@@ -45,7 +42,11 @@ public class MainActivity extends FragmentActivity implements LoadListener{
 	DBHelper helper;
 	ArrayList<User> items;
 	ImageListAdapter adapter;
-	private MenuDrawer mMenuDrawer;
+	BroadcastReceiver br;
+	
+	public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastupdate";
+	public final static String KEY_ACTION = "action";
+	public final static int UPDATE_ALL=0x0010; 
 	
 	private static final String BOT_JID = "ra1ph@jabber.ru/Smack";
 	
@@ -53,16 +54,12 @@ public class MainActivity extends FragmentActivity implements LoadListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_WINDOW);
 		mMenuDrawer.setContentView(R.layout.activity_main);
-		mMenuDrawer.setMenuView(R.layout.menu);
-
 		/*MenuFragment menu = (MenuFragment)getSupportFragmentManager().findFragmentById(R.id.f_menu);
 		menu.getListView().setOnItemClickListener(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 		
-		setContentView(R.layout.activity_main);
 		
 		mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 		imageList=(ListView) findViewById(R.id.image_list);
@@ -87,6 +84,36 @@ public class MainActivity extends FragmentActivity implements LoadListener{
 			}
 		});
 		
+		registerBroadcast();
+		
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		unregisterBroadcast();
+		
+		super.onDestroy();
+	}
+	
+	private void unregisterBroadcast(){
+		unregisterReceiver(br);
+	}
+	
+	private void registerBroadcast(){
+		br = new BroadcastReceiver() {
+		      public void onReceive(Context context, Intent intent) {
+		    	  int action = intent.getIntExtra(KEY_ACTION, -1);
+		    	  switch(action){
+		    	  case UPDATE_ALL:
+		    		  User.getUsers(MainActivity.this, helper);
+		    		  Log.d("myLog", "updated all");
+		    		  break;
+		    	  }
+		      }
+		    };
+		    IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+		    registerReceiver(br, intFilt);
 	}
 
 	@Override
@@ -142,6 +169,10 @@ public class MainActivity extends FragmentActivity implements LoadListener{
 		i.putExtra(XMPPService.MESSAGE_TO, user_id);
 		i.putExtra(XMPPService.MESSAGE_BODY, filename);		
 		startService(i);
+	}
+	
+	public void stopService(){
+		
 	}
 
 	@Override

@@ -122,18 +122,25 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class drawable {
         public static final int bg=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int logo=0x7f020002;
-        public static final int shot=0x7f020003;
-        public static final int splitter=0x7f020004;
+        public static final int delete=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int logo=0x7f020003;
+        public static final int map_point=0x7f020004;
+        public static final int message=0x7f020005;
+        public static final int shot=0x7f020006;
+        public static final int spam=0x7f020007;
+        public static final int splitter=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f05000d;
-        public static final int f_menu=0x7f05000c;
+        public static final int action_settings=0x7f050017;
         public static final int image_list=0x7f05000a;
         public static final int image_listview=0x7f05000b;
+        public static final int layout_bar=0x7f05000c;
+        public static final int login=0x7f050011;
         public static final int logo_layout=0x7f050006;
         public static final int main_layout=0x7f050007;
+        public static final int map_point=0x7f05000d;
+        public static final int mark_spam=0x7f050010;
         /**  Used with View#setTag(int) to specify a position for the active view. 
          */
         public static final int mdActiveViewPosition=0x7f050005;
@@ -152,13 +159,22 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         /**  The ID of the menu container. 
          */
         public static final int md__menu=0x7f050003;
+        public static final int menu_item=0x7f050016;
+        public static final int menu_list=0x7f050015;
+        public static final int pass=0x7f050012;
+        public static final int register=0x7f050014;
+        public static final int send_message=0x7f05000e;
         public static final int shot_btn=0x7f050009;
+        public static final int sign=0x7f050013;
         public static final int splitter=0x7f050008;
+        public static final int user_delete=0x7f05000f;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int listview_item=0x7f030001;
-        public static final int menu=0x7f030002;
+        public static final int login=0x7f030002;
+        public static final int menu=0x7f030003;
+        public static final int menu_item=0x7f030004;
     }
     public static final class menu {
         public static final int main=0x7f090000;

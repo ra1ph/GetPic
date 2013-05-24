@@ -7,6 +7,7 @@ import com.ra1ph.getpic.AsyncTask;
 import com.ra1ph.getpic.Constants;
 import com.ra1ph.getpic.MessageProcessor;
 import com.ra1ph.getpic.message.Message;
+import com.ra1ph.getpic.users.User;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -44,7 +45,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		super(context, DB_NAME, null, DB_VER);
         Log.d(Constants.DEBUG_TAG,"constructor called");
         mContext = context;
-        task = new MessageProcessor(this.getWritableDatabase());
+        Message.createTable(getWritableDatabase());
+        User.createTable(getWritableDatabase());
+        task = new MessageProcessor(context, this.getWritableDatabase());
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		// TODO Auto-generated constructor stub
 	}
@@ -73,6 +76,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	
 	public interface Writable{
+   
+	    final static int ADD=0x0010;
+	    final static int DELETE=0x0020;
+	    
+		public void setType(int Type);
 		public void saveToDB(SQLiteDatabase db);
 	}
 	

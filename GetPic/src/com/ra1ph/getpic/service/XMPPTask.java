@@ -50,59 +50,71 @@ import org.jivesoftware.smackx.provider.XHTMLExtensionProvider;
 import org.jivesoftware.smackx.search.UserSearch;
 
 import com.ra1ph.getpic.Constants;
+import com.ra1ph.getpic.LoginActivity;
+import com.ra1ph.getpic.MainActivity;
+import com.ra1ph.getpic.SuperActivity;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.Writable;
 import com.ra1ph.getpic.message.Message.MessageType;
 import com.ra1ph.getpic.users.User;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.ReceiverCallNotAllowedException;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
-public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> implements PacketListener, MessageListener, ChatManagerListener, FileTransferListener {
+public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void>
+		implements PacketListener, MessageListener, ChatManagerListener,
+		FileTransferListener {
 
 	private static final long TIME_SLEEP = 100;
 	ConnectionConfiguration config;
 	XMPPConnection connection;
 	ChatManager chatManager;
 	DBHelper helper;
-	String login,pass;
+	String login, pass;
 	Context context;
 	ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
-	AtomicBoolean isActive=new AtomicBoolean();
-	
+	AtomicBoolean isActive = new AtomicBoolean();
+	AtomicBoolean isLogout = new AtomicBoolean();
+
 	public XMPPTask(Context context, String login, String pass) {
 		// TODO Auto-generated constructor stub
-		this.login=login;
-		this.pass=pass;
-		this.context=context;
+		this.login = login;
+		this.pass = pass;
+		this.context = context;
 		isActive.set(true);
 		messages = new ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message>();
 	}
-	
-	
+
 	@Override
 	protected Void doInBackground(Void... params) {
 		// TODO Auto-generated method stub
-		connect(login,pass);
+		connect(login, pass);
 		helper = DBHelper.getInstance(context);
-		
-		
-		while(isActive.get()){
-			com.ra1ph.getpic.message.Message mes=null;
-				mes = messages.poll();				
-			if(mes!=null){
-				if(mes.type==MessageType.TEXT){
+
+		while (isActive.get()) {
+			if(isLogout.get()){
+				sendLogoutBroadcast();
+				isActive.set(false);
+				return null;
+			}
+			com.ra1ph.getpic.message.Message mes = null;
+			mes = messages.poll();
+			if (mes != null) {
+				if (mes.type == MessageType.TEXT) {
 					Message message = new Message();
 					message.setBody(mes.body);
 					message.setTo(mes.user_id);
 					connection.sendPacket(message);
-				}else if(mes.type==MessageType.IMAGE){
-					fileTransfer(new File(context.getCacheDir(),mes.body), mes.user_id);
+				} else if (mes.type == MessageType.IMAGE) {
+					fileTransfer(new File(context.getCacheDir(), mes.body),
+							mes.user_id);
 				}
-				
+
 			} else
 				try {
 					Thread.sleep(TIME_SLEEP);
@@ -135,19 +147,43 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 		}
 
 		connection = new XMPPConnection(config);
-		//connection.DEBUG_ENABLED = true;
+		// connection.DEBUG_ENABLED = true;
 		try {
 			connection.connect();
-			connection.login(login, pass);
-			new ServiceDiscoveryManager(connection);
-			FileTransferManager manager = new FileTransferManager(connection);
-			manager.addFileTransferListener(this);
-			connection.addPacketListener(this, null);
-			chatManager = connection.getChatManager();
 		} catch (XMPPException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			isActive.set(false);
+			XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
+			return;
 		}
+		if (!connection.isConnected()) {
+			isActive.set(false);
+			XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
+			return;
+		}
+		try {
+			connection.login(login, pass);
+		} catch (XMPPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			isActive.set(false);
+			XMPPService.sendBroadcast(context, LoginActivity.FAIL);
+			return;
+		}
+		if (connection.isAuthenticated())
+			XMPPService.sendBroadcast(context, LoginActivity.SUCCESS);
+		else {
+			isActive.set(false);
+			XMPPService.sendBroadcast(context, LoginActivity.FAIL);
+			return;
+		}
+
+		new ServiceDiscoveryManager(connection);
+		FileTransferManager manager = new FileTransferManager(connection);
+		manager.addFileTransferListener(this);
+		connection.addPacketListener(this, null);
+		chatManager = connection.getChatManager();
 	}
 
 	public Chat createChat(String user_id) {
@@ -156,13 +192,13 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 			@Override
 			public void processMessage(Chat chat, Message message) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 	}
 
 	public void fileTransfer(File file, String user_id) {
-		
+
 		FileTransferManager manager = new FileTransferManager(connection);
 		OutgoingFileTransfer transfer = manager
 				.createOutgoingFileTransfer(user_id);
@@ -350,49 +386,60 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 				new AdHocCommandDataProvider.SessionExpiredError());
 	}
 
-	public void addMessage(com.ra1ph.getpic.message.Message mes){
+	public void addMessage(com.ra1ph.getpic.message.Message mes) {
 		messages.add(mes);
 	}
-
 
 	@Override
 	public void fileTransferRequest(final FileTransferRequest request) {
 		// TODO Auto-generated method stub
-		new Thread(){
-	         @Override
-	         public void run() {
-	            IncomingFileTransfer transfer = request.accept();
-	            File mf = Environment.getExternalStorageDirectory();
-	            String name = UUID.randomUUID().toString();
-	            File file = new File(context.getCacheDir(),name);
-	            try{
-	                transfer.recieveFile(file);
-	                while(!transfer.isDone()) {
-	                   try{
-	                      Thread.sleep(1000L);
-	                   }catch (Exception e) {
-	                      Log.e(Constants.DEBUG_TAG, e.getMessage());
-	                   }
-	                   if(transfer.getStatus().equals(FileTransfer.Status.error)) {
-	                      Log.e(Constants.DEBUG_TAG, transfer.getError() + "");
-	                   }
-	                   if(transfer.getException() != null) {
-	                      transfer.getException().printStackTrace();
-	                   }
-	                }
-	                com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(request.getRequestor(),name,com.ra1ph.getpic.message.Message.DIRECTION_IN);
-	                mes.type = MessageType.IMAGE;
-	                helper.addWritable(mes);
-	                User user = new User(request.getRequestor(),name);
-	                helper.addWritable(user);
-	                
-	             }catch (Exception e) {
-	                Log.e(Constants.DEBUG_TAG, e.getMessage());
-	            }
-	         };
-	       }.start();
-	}
+		new Thread() {
+			@Override
+			public void run() {
+				IncomingFileTransfer transfer = request.accept();
+				File mf = Environment.getExternalStorageDirectory();
+				String name = UUID.randomUUID().toString();
+				File file = new File(context.getCacheDir(), name);
+				try {
+					transfer.recieveFile(file);
+					boolean isOK = true;
+					while (!transfer.isDone()) {
+						try {
+							Thread.sleep(1000L);
+						} catch (Exception e) {
+							isOK = false;
+							Log.e(Constants.DEBUG_TAG, e.getMessage());
+						}
+						if (transfer.getStatus().equals(
+								FileTransfer.Status.error)) {
+							isOK = false;
+							Log.e(Constants.DEBUG_TAG, transfer.getError() + "");
+						}
+						if (transfer.getException() != null) {
+							isOK = false;
+							transfer.getException().printStackTrace();
+						}
+					}
+					if (isOK) {
+						com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
+								request.getRequestor(), name,
+								com.ra1ph.getpic.message.Message.DIRECTION_IN,
+								Writable.ADD);
+						mes.type = MessageType.IMAGE;
+						helper.addWritable(mes);
+						User user = new User(request.getRequestor(), name,
+								Writable.ADD);
+						helper.addWritable(user);
+						sendBroadcast(MainActivity.UPDATE_ALL);
+						Log.d(Constants.DEBUG_TAG, "is OK");
+					}
 
+				} catch (Exception e) {
+					Log.e(Constants.DEBUG_TAG, e.getMessage());
+				}
+			};
+		}.start();
+	}
 
 	@Override
 	public void chatCreated(Chat chat, boolean arg1) {
@@ -400,33 +447,43 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void> imple
 		chat.addMessageListener(this);
 	}
 
-
 	@Override
 	public void processMessage(Chat arg0, Message arg1) {
 		// TODO Auto-generated method stub
-			Message message = arg1;
-			if(message.getBody()!=null){
+		Message message = arg1;
+		if (message.getBody() != null) {
 			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
 					message.getFrom(), message.getBody(),
-					com.ra1ph.getpic.message.Message.DIRECTION_IN);
+					com.ra1ph.getpic.message.Message.DIRECTION_IN, Writable.ADD);
 			helper.addWritable(mes);
-			}
+		}
 	}
-
 
 	@Override
 	public void processPacket(Packet arg0) {
 		// TODO Auto-generated method stub
-		if(arg0 instanceof Message){
-			Log.d(Constants.DEBUG_TAG,"Packet in!");
+		if (arg0 instanceof Message) {
+			Log.d(Constants.DEBUG_TAG, "Packet in!");
 			Message message = (Message) arg0;
-			if(message.getBody()!=null){
-			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
-					message.getFrom(), message.getBody(),
-					com.ra1ph.getpic.message.Message.DIRECTION_IN);
-			helper.addWritable(mes);
+			if (message.getBody() != null) {
+				com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
+						message.getFrom(), message.getBody(),
+						com.ra1ph.getpic.message.Message.DIRECTION_IN,
+						Writable.ADD);
+				helper.addWritable(mes);
 			}
 		}
+	}
+
+	private void sendBroadcast(int ACTION) {
+		Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+		intent.putExtra(MainActivity.KEY_ACTION, ACTION);
+		context.sendBroadcast(intent);
+	}
+	
+	private void sendLogoutBroadcast() {
+		Intent intent = new Intent(SuperActivity.LOGOUT_BROADCAST_ACTION);
+		context.sendBroadcast(intent);
 	}
 
 }
