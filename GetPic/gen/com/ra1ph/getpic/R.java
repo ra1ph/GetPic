@@ -132,7 +132,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int splitter=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f050017;
+        public static final int action_settings=0x7f050019;
+        public static final int email=0x7f050017;
         public static final int image_list=0x7f05000a;
         public static final int image_listview=0x7f05000b;
         public static final int layout_bar=0x7f05000c;
@@ -163,6 +164,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int menu_list=0x7f050015;
         public static final int pass=0x7f050012;
         public static final int register=0x7f050014;
+        public static final int register_button=0x7f050018;
         public static final int send_message=0x7f05000e;
         public static final int shot_btn=0x7f050009;
         public static final int sign=0x7f050013;
@@ -175,6 +177,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int login=0x7f030002;
         public static final int menu=0x7f030003;
         public static final int menu_item=0x7f030004;
+        public static final int registration=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f090000;

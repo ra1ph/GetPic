@@ -10,6 +10,8 @@ import net.simonvt.menudrawer.MenuDrawer;
 
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.LoadListener;
+import com.ra1ph.getpic.image.EXIFProcessor;
+import com.ra1ph.getpic.service.GPSTracker;
 import com.ra1ph.getpic.service.XMPPService;
 import com.ra1ph.getpic.users.User;
 
@@ -43,6 +45,8 @@ public class MainActivity extends SuperActivity implements LoadListener{
 	ArrayList<User> items;
 	ImageListAdapter adapter;
 	BroadcastReceiver br;
+	
+	GPSTracker gps;
 	
 	public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastupdate";
 	public final static String KEY_ACTION = "action";
@@ -85,6 +89,8 @@ public class MainActivity extends SuperActivity implements LoadListener{
 		});
 		
 		registerBroadcast();
+		gps = new GPSTracker(this);
+		if(!gps.canGetLocation())Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
 		
 	}
 	
@@ -129,7 +135,7 @@ public class MainActivity extends SuperActivity implements LoadListener{
 		if ((requestCode == CAMERA_PIC_REQUEST)&&(resultCode==RESULT_OK)) {
             Bitmap image = (Bitmap) data.getExtras().get("data");
             String user_id = mPrefs.getString(XMPPService.MESSAGE_TO, null);
-            String filename = BMPtoFile(image);
+            String filename = BMPtoFile(image);            
             sendImage(user_id, filename);
       }
 		super.onActivityResult(requestCode, resultCode, data);
@@ -142,12 +148,16 @@ public class MainActivity extends SuperActivity implements LoadListener{
 
 		//Convert bitmap to byte array
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		bitmap.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+		bitmap.compress(CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
 		byte[] bitmapdata = bos.toByteArray();
 
 		//write the bytes in file
 		FileOutputStream fos = new FileOutputStream(f);
 		fos.write(bitmapdata);
+		
+		EXIFProcessor exif = new EXIFProcessor(f);
+		exif.UpdateGeoTag(gps.getLatitude(), gps.getLongitude());
+		
 		return f.getName();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -181,6 +191,14 @@ public class MainActivity extends SuperActivity implements LoadListener{
 		items = (ArrayList<User>) object;
 		adapter.items = items;
 		adapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		gps = new GPSTracker(this);
+		if(!gps.canGetLocation())Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
+		super.onResume();
 	}
 
 }

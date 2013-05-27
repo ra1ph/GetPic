@@ -1,21 +1,31 @@
 package com.ra1ph.getpic.service;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.filter.PacketIDFilter;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Registration;
 import org.jivesoftware.smack.provider.PrivacyProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
@@ -52,6 +62,7 @@ import org.jivesoftware.smackx.search.UserSearch;
 import com.ra1ph.getpic.Constants;
 import com.ra1ph.getpic.LoginActivity;
 import com.ra1ph.getpic.MainActivity;
+import com.ra1ph.getpic.RegisterActivity;
 import com.ra1ph.getpic.SuperActivity;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.Writable;
@@ -66,16 +77,18 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
-public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void>
+public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		implements PacketListener, MessageListener, ChatManagerListener,
 		FileTransferListener {
 
+	public static final int ACTION_LOGIN = 0x0010;
+	public static final int ACTION_REGISTER = 0x0020;
 	private static final long TIME_SLEEP = 100;
 	ConnectionConfiguration config;
 	XMPPConnection connection;
 	ChatManager chatManager;
 	DBHelper helper;
-	String login, pass;
+	String login, pass, email;
 	Context context;
 	ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
 	AtomicBoolean isActive = new AtomicBoolean();
@@ -91,9 +104,11 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void>
 	}
 
 	@Override
-	protected Void doInBackground(Void... params) {
+	protected Void doInBackground(Integer... params) {
 		// TODO Auto-generated method stub
-		connect(login, pass);
+		connect();
+		if(params[0]==ACTION_LOGIN){
+		login(login, pass);
 		helper = DBHelper.getInstance(context);
 
 		while (isActive.get()) {
@@ -122,10 +137,32 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void>
 					e.printStackTrace();
 				}
 		}
+		}else if(params[0]==ACTION_REGISTER) register(login,pass,email);
 		return null;
 	}
-
-	public void connect(String login, String pass) {
+	
+	public void register(String username, String pass, String email){
+		AccountManager am = new AccountManager(connection);
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put("username", username);
+		attributes.put("password", pass);
+		attributes.put("email", email);
+		if(am.supportsAccountCreation()){
+		try {
+			am.createAccount(username, pass, attributes);
+			sendRegBroadcast(RegisterActivity.SUCCESS);
+		} catch (XMPPException e) {
+			// TODO Auto-generated catch block
+			Log.d(Constants.DEBUG_TAG, "Register failed!!");
+			e.printStackTrace();
+		}
+		}else {
+			Log.d(Constants.DEBUG_TAG,"Server is not support register!!!");
+			sendRegBroadcast(RegisterActivity.FAIL);
+		}
+	}
+	
+	public void connect() {
 		configure(ProviderManager.getInstance());
 
 		config = new ConnectionConfiguration("jabber.ru", 5222, "jabber.ru");
@@ -162,6 +199,10 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void>
 			XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
 			return;
 		}
+		
+	}
+	
+	public void login(String login, String pass){
 		try {
 			connection.login(login, pass);
 		} catch (XMPPException e) {
@@ -483,6 +524,12 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Void, Void, Void>
 	
 	private void sendLogoutBroadcast() {
 		Intent intent = new Intent(SuperActivity.LOGOUT_BROADCAST_ACTION);
+		context.sendBroadcast(intent);
+	}
+	
+	private void sendRegBroadcast(int ACTION) {
+		Intent intent = new Intent(RegisterActivity.REG_BROADCAST_ACTION);
+		intent.putExtra(RegisterActivity.REG, ACTION);
 		context.sendBroadcast(intent);
 	}
 
