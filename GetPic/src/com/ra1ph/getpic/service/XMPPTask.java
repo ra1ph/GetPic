@@ -59,6 +59,7 @@ import org.jivesoftware.smackx.provider.VCardProvider;
 import org.jivesoftware.smackx.provider.XHTMLExtensionProvider;
 import org.jivesoftware.smackx.search.UserSearch;
 
+import com.ra1ph.getpic.AsyncTask;
 import com.ra1ph.getpic.Constants;
 import com.ra1ph.getpic.LoginActivity;
 import com.ra1ph.getpic.MainActivity;
@@ -66,13 +67,15 @@ import com.ra1ph.getpic.RegisterActivity;
 import com.ra1ph.getpic.SuperActivity;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.Writable;
+import com.ra1ph.getpic.image.EXIFProcessor;
+import com.ra1ph.getpic.map.MapTask;
+import com.ra1ph.getpic.map.MapTask.MapRequest;
 import com.ra1ph.getpic.message.Message.MessageType;
 import com.ra1ph.getpic.users.User;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.ReceiverCallNotAllowedException;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -471,7 +474,8 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 						User user = new User(request.getRequestor(), name,
 								Writable.ADD);
 						helper.addWritable(user);
-						sendBroadcast(MainActivity.UPDATE_ALL);
+						loadMap(name);
+						
 						Log.d(Constants.DEBUG_TAG, "is OK");
 					}
 
@@ -482,6 +486,19 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		}.start();
 	}
 
+	private void loadMap(String filename){
+		String path = context.getCacheDir().getPath()+"/"+filename;
+		EXIFProcessor exif = new EXIFProcessor(path);
+		MapRequest request = new MapRequest(); 
+		request.latitude = exif.getLatitude();
+		request.longitude = exif.getLongitude();
+		request.zoom = 2;
+		request.xSize=200;
+		request.ySize=200;
+		MapTask mapTask = new MapTask(context, request, filename);
+		mapTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+	
 	@Override
 	public void chatCreated(Chat chat, boolean arg1) {
 		// TODO Auto-generated method stub

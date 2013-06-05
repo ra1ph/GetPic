@@ -148,7 +148,7 @@ public class MainActivity extends SuperActivity implements LoadListener{
 
 		//Convert bitmap to byte array
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		bitmap.compress(CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
+		bitmap.compress(CompressFormat.JPEG,  100, bos);
 		byte[] bitmapdata = bos.toByteArray();
 
 		//write the bytes in file
