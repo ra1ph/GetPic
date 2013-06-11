@@ -180,10 +180,6 @@ public class MainActivity extends SuperActivity implements LoadListener{
 		i.putExtra(XMPPService.MESSAGE_BODY, filename);		
 		startService(i);
 	}
-	
-	public void stopService(){
-		
-	}
 
 	@Override
 	public void onLoadListener(Object object) {

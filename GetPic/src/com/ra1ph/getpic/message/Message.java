@@ -19,7 +19,7 @@ import com.ra1ph.getpic.users.User;
 
 public class Message implements Writable, Loadable {
 	public String user_id, body;
-	int direction;
+	public int direction;
 	int Type;
 
 	public enum MessageType {
@@ -38,6 +38,7 @@ public class Message implements Writable, Loadable {
 	final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 			+ TABLE_NAME
 			+ " ( _id INTEGER PRIMARY KEY , user_id TEXT, direction TEXT, body TEXT, is_picture BOOLEAN)";
+    final static String SELECTION_MES_BY_USER = USER_ID+"=?";
 
 	public Message(String user_id, String body, int direction, int typeOp) {
 		this.body = body;
@@ -90,8 +91,10 @@ public class Message implements Writable, Loadable {
 		return messages;
 	}
 
-	public void getMessages(LoadListener listener, DBHelper helper) {
+	public void getMessages(LoadListener listener, DBHelper helper, String user_id) {
 		DBLoader loader = new DBLoader(helper);
+        loader.selection = SELECTION_MES_BY_USER;
+        loader.selArgs = new String[]{user_id};
 		loader.tableName = TABLE_NAME;
 		loader.setListener(listener);
 		loader.setProcessor(this);

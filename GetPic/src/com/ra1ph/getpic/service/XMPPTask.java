@@ -132,6 +132,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 					fileTransfer(new File(context.getCacheDir(), mes.body),
 							mes.user_id);
 				}
+                helper.addWritable(mes);
 
 			} else
 				try {

@@ -22,7 +22,7 @@ public class User implements Writable,Loadable {
 	public String user_id,picture;
 	private int Type;
 	
-	final static String USER_ID = "user_id";
+	public final static String USER_ID = "user_id";
 	final static String PICTURE = "picture";
 	final static String TABLE_NAME = "users";
 	final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "+TABLE_NAME+
