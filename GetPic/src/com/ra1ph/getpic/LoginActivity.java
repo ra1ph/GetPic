@@ -1,5 +1,6 @@
 package com.ra1ph.getpic;
 
+import android.app.ProgressDialog;
 import com.ra1ph.getpic.service.XMPPService;
 
 import android.app.Activity;
@@ -31,6 +32,7 @@ public class LoginActivity extends Activity {
 	SharedPreferences mPrefs;
 	BroadcastReceiver br;
 	String login,pass;
+    ProgressDialog progress;
 
 	public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastauth";
 
@@ -84,6 +86,7 @@ public class LoginActivity extends Activity {
 	private void registerBroadcast() {
 		br = new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
+                if(progress!=null)progress.dismiss();
 				int action = intent.getIntExtra(AUTH, -1);
 				switch (action) {
 				case SUCCESS:
@@ -111,6 +114,9 @@ public class LoginActivity extends Activity {
 	}
 
 	private void sendAuth(String login, String pass) {
+        progress=ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
+        progress.setCancelable(false);
+
 		Intent i = new Intent(LoginActivity.this, XMPPService.class);
 		i.putExtra(XMPPService.CODE_ACTION, XMPPService.AUTH_USER);
 		i.putExtra(LOGIN, login);

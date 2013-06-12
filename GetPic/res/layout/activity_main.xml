@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/splitter"
             android:layout_above="@id/shot_btn"
-            android:layout_margin="20dip"
+            android:layout_margin="@dimen/listview_margin"
             android:id="@+id/image_list"
             android:divider="@null"
             android:dividerHeight="30dip"/>

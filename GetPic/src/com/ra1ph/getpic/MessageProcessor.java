@@ -35,6 +35,7 @@ public class MessageProcessor extends com.ra1ph.getpic.AsyncTask<Void, Void, Voi
 				synchronized(db){
 				write.saveToDB(db);
 				sendBroadcast(MainActivity.UPDATE_ALL);
+                sendChatBroadcast(ChatActivity.UPDATE);
 				if(write instanceof com.ra1ph.getpic.message.Message)
 				Log.d(Constants.DEBUG_TAG, "bla bla bla "+((com.ra1ph.getpic.message.Message)write).body);
 				}
@@ -65,5 +66,11 @@ public class MessageProcessor extends com.ra1ph.getpic.AsyncTask<Void, Void, Voi
 		intent.putExtra(MainActivity.KEY_ACTION,ACTION);
         context.sendBroadcast(intent);
 	}
+
+    private void sendChatBroadcast(int ACTION) {
+        Intent intent = new Intent(ChatActivity.BROADCAST_ACTION);
+        intent.putExtra(ChatActivity.KEY_ACTION, ACTION);
+        context.sendBroadcast(intent);
+    }
 
 }

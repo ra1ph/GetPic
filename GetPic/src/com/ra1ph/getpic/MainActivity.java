@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.app.ProgressDialog;
 import net.simonvt.menudrawer.MenuDrawer;
 
 import com.ra1ph.getpic.database.DBHelper;
@@ -38,7 +39,7 @@ public class MainActivity extends SuperActivity implements LoadListener{
 	public static final String PREFS_NAME="prefs";
 	private static final int CAMERA_PIC_REQUEST = 2500;
 	private static final String TEMP_FILENAME = "temp";
-	private String send_user_id = null;
+    private String send_user_id = null;
 	private SharedPreferences mPrefs;
 	private ListView imageList;
 	DBHelper helper;
@@ -50,11 +51,13 @@ public class MainActivity extends SuperActivity implements LoadListener{
 	
 	public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastupdate";
 	public final static String KEY_ACTION = "action";
-	public final static int UPDATE_ALL=0x0010; 
+	public final static int UPDATE_ALL=0x0010;
+    public static final int PHOTO_SENDED = 0x0020;
 	
 	private static final String BOT_JID = "ra1ph@jabber.ru/Smack";
-	
-	@Override
+    private ProgressDialog progress;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
@@ -63,8 +66,7 @@ public class MainActivity extends SuperActivity implements LoadListener{
 		menu.getListView().setOnItemClickListener(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
-		
-		
+
 		mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 		imageList=(ListView) findViewById(R.id.image_list);
 		helper = new DBHelper(this);
@@ -115,6 +117,9 @@ public class MainActivity extends SuperActivity implements LoadListener{
 		    		  User.getUsers(MainActivity.this, helper);
 		    		  Log.d("myLog", "updated all");
 		    		  break;
+                  case PHOTO_SENDED:
+                  progress.dismiss();
+                  break;
 		    	  }
 		      }
 		    };
@@ -174,6 +179,10 @@ public class MainActivity extends SuperActivity implements LoadListener{
 	}
 	
 	public void sendImage(String user_id, String filename){
+
+        progress= ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
+        progress.setCancelable(false);
+
 		Intent i = new Intent(MainActivity.this, XMPPService.class);
 		i.putExtra(XMPPService.CODE_ACTION, XMPPService.NEW_IMAGE_MESSAGE);
 		i.putExtra(XMPPService.MESSAGE_TO, user_id);

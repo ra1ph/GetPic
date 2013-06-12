@@ -3,6 +3,11 @@ package com.ra1ph.getpic;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Point;
+import android.util.TypedValue;
+import android.view.Display;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.image.EXIFProcessor;
 import com.ra1ph.getpic.image.ImageAsync;
@@ -30,6 +35,10 @@ public class ImageListAdapter extends BaseAdapter {
 	public ArrayList<User> items;	
 	Activity context;
 	Bitmap cap;
+    private int mapWidth,mapHeight;
+
+    public static final String MAP_WIDTH = "map_width";
+    public static final String MAP_HEIGHT = "map_height";
 	
 	static class ViewHolder {
         protected ImageView image;
@@ -40,7 +49,23 @@ public class ImageListAdapter extends BaseAdapter {
 		this.context=context;
 		this.items = items;
 		cap = BitmapFactory.decodeResource(context.getResources(), R.drawable.cap);
-		// TODO Auto-generated constructor stub
+        SharedPreferences mPrefs = context.getSharedPreferences(MainActivity.PREFS_NAME, MainActivity.MODE_PRIVATE);
+        mapWidth = mPrefs.getInt(MAP_WIDTH,0);
+        mapHeight = mPrefs.getInt(MAP_HEIGHT,0);
+        if((mapWidth==0)||(mapHeight==0)){
+            Resources r = context.getResources();
+            Display display = context.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            size.x = display.getWidth();
+            size.y = display.getHeight();
+
+            mapHeight = r.getDimensionPixelSize(R.dimen.map_heigth);
+            mapWidth = size.x - (r.getDimensionPixelSize(R.dimen.listview_margin)*4);
+            mPrefs.edit()
+                    .putInt(MAP_HEIGHT,(int)mapHeight)
+                    .putInt(MAP_WIDTH,(int)mapWidth)
+                    .commit();
+        }
 	}
 	
 	@Override

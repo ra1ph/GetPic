@@ -4,12 +4,23 @@
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:weightSum="1.0">
+    <LinearLayout android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:paddingRight="20dip"
+                  android:paddingLeft="20dip"
+                  android:paddingBottom="20dip"
+                  android:paddingTop="20dip"
+                    android:id="@+id/chat_lay">
     <TextView android:id="@+id/chat_text"
               android:layout_height="wrap_content"
               android:layout_width="wrap_content"
               android:textColor="#444444"
-              android:textSize="20dip"
-            android:paddingRight="20dip"
-            android:paddingLeft="20dip"/>
+              android:textSize="20dip"/>
+        <ImageView android:id="@+id/chat_image"
+                   android:layout_height="wrap_content"
+                   android:layout_width="wrap_content"
+                   android:maxHeight="200dip"
+                   android:maxWidth="200dip"/>
+    </LinearLayout>
 
 </RelativeLayout>

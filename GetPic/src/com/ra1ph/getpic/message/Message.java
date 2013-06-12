@@ -91,13 +91,14 @@ public class Message implements Writable, Loadable {
 		return messages;
 	}
 
-	public void getMessages(LoadListener listener, DBHelper helper, String user_id) {
+	public static void getMessages(LoadListener listener, DBHelper helper, String user_id) {
 		DBLoader loader = new DBLoader(helper);
         loader.selection = SELECTION_MES_BY_USER;
         loader.selArgs = new String[]{user_id};
 		loader.tableName = TABLE_NAME;
 		loader.setListener(listener);
-		loader.setProcessor(this);
+        Message mes = new Message(null,null,0,0);
+		loader.setProcessor(mes);
 		loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 

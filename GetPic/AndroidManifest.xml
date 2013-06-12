@@ -24,7 +24,8 @@
          <activity
             android:name="com.ra1ph.getpic.LoginActivity"
             android:label="@string/app_name" 
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,18 +33,21 @@
             </intent-filter>
         </activity>
         
-         <activity android:name="com.ra1ph.getpic.RegisterActivity">
+         <activity android:name="com.ra1ph.getpic.RegisterActivity"
+                   android:screenOrientation="portrait">
              
          </activity>
         
         <activity
             android:name="com.ra1ph.getpic.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity
                 android:name="com.ra1ph.getpic.ChatActivity"
-                android:label="@string/app_name" >
+                android:label="@string/app_name"
+                android:screenOrientation="portrait">
         </activity>
         
         <service android:name="com.ra1ph.getpic.service.XMPPService"/>

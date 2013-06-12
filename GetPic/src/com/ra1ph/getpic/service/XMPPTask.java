@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.ra1ph.getpic.*;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
@@ -59,12 +60,6 @@ import org.jivesoftware.smackx.provider.VCardProvider;
 import org.jivesoftware.smackx.provider.XHTMLExtensionProvider;
 import org.jivesoftware.smackx.search.UserSearch;
 
-import com.ra1ph.getpic.AsyncTask;
-import com.ra1ph.getpic.Constants;
-import com.ra1ph.getpic.LoginActivity;
-import com.ra1ph.getpic.MainActivity;
-import com.ra1ph.getpic.RegisterActivity;
-import com.ra1ph.getpic.SuperActivity;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.database.DBHelper.Writable;
 import com.ra1ph.getpic.image.EXIFProcessor;
@@ -128,6 +123,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 					message.setBody(mes.body);
 					message.setTo(mes.user_id);
 					connection.sendPacket(message);
+                    sendChatBroadcast(ChatActivity.MESSAGE_SENDED);
 				} else if (mes.type == MessageType.IMAGE) {
 					fileTransfer(new File(context.getCacheDir(), mes.body),
 							mes.user_id);
@@ -274,6 +270,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		} else {
 			System.out.println("Success");
 		}
+        sendBroadcast(MainActivity.PHOTO_SENDED);
 	}
 
 	public void configure(ProviderManager pm) {
@@ -493,9 +490,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		MapRequest request = new MapRequest(); 
 		request.latitude = exif.getLatitude();
 		request.longitude = exif.getLongitude();
-		request.zoom = 2;
-		request.xSize=200;
-		request.ySize=200;
+		request.zoom = 3;
 		MapTask mapTask = new MapTask(context, request, filename);
 		mapTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
@@ -550,5 +545,11 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		intent.putExtra(RegisterActivity.REG, ACTION);
 		context.sendBroadcast(intent);
 	}
+
+    private void sendChatBroadcast(int ACTION) {
+        Intent intent = new Intent(ChatActivity.BROADCAST_ACTION);
+        intent.putExtra(ChatActivity.KEY_ACTION, ACTION);
+        context.sendBroadcast(intent);
+    }
 
 }
