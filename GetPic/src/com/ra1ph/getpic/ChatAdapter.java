@@ -65,7 +65,7 @@ public class ChatAdapter extends BaseAdapter {
         }else if(messages.get(position).type== Message.MessageType.IMAGE) {
         String path = context.getCacheDir().getPath()+"/"+messages.get(position).body;
 		image.setImageBitmap(BitmapFactory.decodeFile(path));
-            text.setText("");
+        text.setText("");
         }
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

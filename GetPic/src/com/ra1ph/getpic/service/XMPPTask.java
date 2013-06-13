@@ -8,25 +8,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.os.Vibrator;
 import com.ra1ph.getpic.*;
-import org.jivesoftware.smack.AccountManager;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.ChatManagerListener;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.PacketCollector;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Registration;
+import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.provider.PrivacyProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
@@ -82,6 +71,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 	public static final int ACTION_LOGIN = 0x0010;
 	public static final int ACTION_REGISTER = 0x0020;
 	private static final long TIME_SLEEP = 100;
+    private static final String SERVER = "jabber.ru";
 	ConnectionConfiguration config;
 	XMPPConnection connection;
 	ChatManager chatManager;
@@ -91,19 +81,24 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 	ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
 	AtomicBoolean isActive = new AtomicBoolean();
 	AtomicBoolean isLogout = new AtomicBoolean();
+    Vibrator v;
 
-	public XMPPTask(Context context, String login, String pass) {
+    public XMPPTask(Context context, String login, String pass) {
 		// TODO Auto-generated constructor stub
 		this.login = login;
 		this.pass = pass;
 		this.context = context;
 		isActive.set(true);
 		messages = new ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message>();
-	}
+
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+    }
 
 	@Override
 	protected Void doInBackground(Integer... params) {
 		// TODO Auto-generated method stub
+        SmackConfiguration.setPacketReplyTimeout(10000);
 		connect();
 		if(params[0]==ACTION_LOGIN){
 		login(login, pass);
@@ -115,6 +110,13 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 				isActive.set(false);
 				return null;
 			}
+            if(!connection.isConnected())connect();
+            if(!connection.isAuthenticated())login(login,pass);
+
+            Presence p = new Presence(Presence.Type.available);
+            p.setStatus("Available");
+            connection.sendPacket(p);
+
 			com.ra1ph.getpic.message.Message mes = null;
 			mes = messages.poll();
 			if (mes != null) {
@@ -165,7 +167,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 	public void connect() {
 		configure(ProviderManager.getInstance());
 
-		config = new ConnectionConfiguration("jabber.ru", 5222, "jabber.ru");
+		config = new ConnectionConfiguration(SERVER, 5222, SERVER);
 		config.setDebuggerEnabled(true);
 
 		XMPPConnection.DEBUG_ENABLED = true;
@@ -463,6 +465,11 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 						}
 					}
 					if (isOK) {
+                        try{
+                        v.vibrate(1000);
+                        }catch(Exception e){
+
+                        }
 						com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
 								request.getRequestor(), name,
 								com.ra1ph.getpic.message.Message.DIRECTION_IN,
@@ -510,6 +517,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 					message.getFrom(), message.getBody(),
 					com.ra1ph.getpic.message.Message.DIRECTION_IN, Writable.ADD);
 			helper.addWritable(mes);
+            v.vibrate(1000);
 		}
 	}
 
@@ -525,6 +533,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 						com.ra1ph.getpic.message.Message.DIRECTION_IN,
 						Writable.ADD);
 				helper.addWritable(mes);
+                v.vibrate(1000);
 			}
 		}
 	}

@@ -5,8 +5,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.app.ProgressDialog;
+import android.content.*;
+import android.net.Uri;
+import android.provider.MediaStore;
 import net.simonvt.menudrawer.MenuDrawer;
 
 import com.ra1ph.getpic.database.DBHelper;
@@ -18,11 +22,6 @@ import com.ra1ph.getpic.users.User;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -34,176 +33,199 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-public class MainActivity extends SuperActivity implements LoadListener{
+public class MainActivity extends SuperActivity implements LoadListener {
 
-	public static final String PREFS_NAME="prefs";
-	private static final int CAMERA_PIC_REQUEST = 2500;
-	private static final String TEMP_FILENAME = "temp";
+    public static final String PREFS_NAME = "prefs";
+    private static final int CAMERA_PIC_REQUEST = 2500;
+    private static final int PICTURE_RESULT = 9;
+    private static final String TEMP_FILENAME = "temp";
     private String send_user_id = null;
-	private SharedPreferences mPrefs;
-	private ListView imageList;
-	DBHelper helper;
-	ArrayList<User> items;
-	ImageListAdapter adapter;
-	BroadcastReceiver br;
-	
-	GPSTracker gps;
-	
-	public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastupdate";
-	public final static String KEY_ACTION = "action";
-	public final static int UPDATE_ALL=0x0010;
+    private SharedPreferences mPrefs;
+    private ListView imageList;
+    DBHelper helper;
+    ArrayList<User> items;
+    ImageListAdapter adapter;
+    BroadcastReceiver br;
+
+    GPSTracker gps;
+
+    public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastupdate";
+    public final static String KEY_ACTION = "action";
+    public final static int UPDATE_ALL = 0x0010;
     public static final int PHOTO_SENDED = 0x0020;
-	
-	private static final String BOT_JID = "ra1ph@jabber.ru/Smack";
+
+    private String BOT_JID = "ra1ph@jabber.ru/Smack";
+    private static final String BOT_JID1 = "kakaka1@jabber.ru/Smack";
+    private static final String BOT_JID2 = "ra1ph@jabber.ru/Smack";
     private ProgressDialog progress;
+    private Uri imageUri;
 
     @Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		mMenuDrawer.setContentView(R.layout.activity_main);
-		/*MenuFragment menu = (MenuFragment)getSupportFragmentManager().findFragmentById(R.id.f_menu);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mMenuDrawer.setContentView(R.layout.activity_main);
+        /*MenuFragment menu = (MenuFragment)getSupportFragmentManager().findFragmentById(R.id.f_menu);
 		menu.getListView().setOnItemClickListener(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
-		mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-		imageList=(ListView) findViewById(R.id.image_list);
-		helper = new DBHelper(this);
-		SQLiteDatabase db = helper.getReadableDatabase();
-		items = new ArrayList<User>();
-		adapter = new ImageListAdapter(this,items);
-		imageList.setAdapter(adapter);
-		
-		User.getUsers(this, helper);
-		
-		Intent i = new Intent(MainActivity.this, XMPPService.class);
-		startService(i);
-		
-		ImageView shot = (ImageView) findViewById(R.id.shot_btn);
-		shot.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				openCamera(BOT_JID);
-			}
-		});
-		
-		registerBroadcast();
-		gps = new GPSTracker(this);
-		if(!gps.canGetLocation())Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
-		
-	}
-	
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		unregisterBroadcast();
-		
-		super.onDestroy();
-	}
-	
-	private void unregisterBroadcast(){
-		unregisterReceiver(br);
-	}
-	
-	private void registerBroadcast(){
-		br = new BroadcastReceiver() {
-		      public void onReceive(Context context, Intent intent) {
-		    	  int action = intent.getIntExtra(KEY_ACTION, -1);
-		    	  switch(action){
-		    	  case UPDATE_ALL:
-		    		  User.getUsers(MainActivity.this, helper);
-		    		  Log.d("myLog", "updated all");
-		    		  break;
-                  case PHOTO_SENDED:
-                  progress.dismiss();
-                  break;
-		    	  }
-		      }
-		    };
-		    IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
-		    registerReceiver(br, intFilt);
-	}
+        mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String login = mPrefs.getString(LoginActivity.LOGIN, "");
+        if (login.equals("kakaka1")) BOT_JID = BOT_JID2;
+        else if (login.toLowerCase().equals("ra1ph")) BOT_JID = BOT_JID1;
+        imageList = (ListView) findViewById(R.id.image_list);
+        helper = new DBHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        items = new ArrayList<User>();
+        adapter = new ImageListAdapter(this, items);
+        imageList.setAdapter(adapter);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub		
-		if ((requestCode == CAMERA_PIC_REQUEST)&&(resultCode==RESULT_OK)) {
-            Bitmap image = (Bitmap) data.getExtras().get("data");
-            String user_id = mPrefs.getString(XMPPService.MESSAGE_TO, null);
-            String filename = BMPtoFile(image);            
-            sendImage(user_id, filename);
-      }
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-	
-	public String BMPtoFile(Bitmap bitmap){
-		File f = new File(this.getCacheDir(), TEMP_FILENAME);
-		try {
-			f.createNewFile();		
+        User.getUsers(this, helper);
 
-		//Convert bitmap to byte array
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		bitmap.compress(CompressFormat.JPEG,  100, bos);
-		byte[] bitmapdata = bos.toByteArray();
+        Intent i = new Intent(MainActivity.this, XMPPService.class);
+        startService(i);
 
-		//write the bytes in file
-		FileOutputStream fos = new FileOutputStream(f);
-		fos.write(bitmapdata);
-		
-		EXIFProcessor exif = new EXIFProcessor(f);
-		exif.UpdateGeoTag(gps.getLatitude(), gps.getLongitude());
-		
-		return f.getName();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
-		}
-	}
-	
-	public void openCamera(String user_id){
-		Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-		mPrefs.edit().putString(XMPPService.MESSAGE_TO, user_id).commit();
-		
-        startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
-	}
-	
-	public void sendImage(String user_id, String filename){
+        ImageView shot = (ImageView) findViewById(R.id.shot_btn);
+        shot.setOnClickListener(new OnClickListener() {
 
-        progress= ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                openCamera(BOT_JID);
+            }
+        });
+
+        registerBroadcast();
+        gps = new GPSTracker(this);
+        if (!gps.canGetLocation()) Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        unregisterBroadcast();
+
+        super.onDestroy();
+    }
+
+    private void unregisterBroadcast() {
+        unregisterReceiver(br);
+    }
+
+    private void registerBroadcast() {
+        br = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                int action = intent.getIntExtra(KEY_ACTION, -1);
+                switch (action) {
+                    case UPDATE_ALL:
+                        User.getUsers(MainActivity.this, helper);
+                        Log.d("myLog", "updated all");
+                        break;
+                    case PHOTO_SENDED:
+                        progress.dismiss();
+                        break;
+                }
+            }
+        };
+        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+        registerReceiver(br, intFilt);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        if ((requestCode == PICTURE_RESULT) && (resultCode == RESULT_OK) && (imageUri!=null)) {
+            Bitmap image = null;
+            try {
+                image = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+                String user_id = mPrefs.getString(XMPPService.MESSAGE_TO, null);
+                String filename = BMPtoFile(image);
+                sendImage(user_id, filename);
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public String BMPtoFile(Bitmap bitmap) {
+        File f = new File(this.getCacheDir(), UUID.randomUUID().toString());
+        try {
+            f.createNewFile();
+
+            //Convert bitmap to byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(CompressFormat.JPEG, 75, bos);
+            byte[] bitmapdata = bos.toByteArray();
+
+            //write the bytes in file
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(bitmapdata);
+
+            EXIFProcessor exif = new EXIFProcessor(f);
+            exif.UpdateGeoTag(gps.getLatitude(), gps.getLongitude());
+
+            return f.getName();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public void openCamera(String user_id) {
+
+        mPrefs.edit().putString(XMPPService.MESSAGE_TO, user_id).commit();
+        imageUri=null;
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+        imageUri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, PICTURE_RESULT);
+
+
+        //startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
+    }
+
+    public void sendImage(String user_id, String filename) {
+
+        progress = ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
         progress.setCancelable(false);
 
-		Intent i = new Intent(MainActivity.this, XMPPService.class);
-		i.putExtra(XMPPService.CODE_ACTION, XMPPService.NEW_IMAGE_MESSAGE);
-		i.putExtra(XMPPService.MESSAGE_TO, user_id);
-		i.putExtra(XMPPService.MESSAGE_BODY, filename);		
-		startService(i);
-	}
+        Intent i = new Intent(MainActivity.this, XMPPService.class);
+        i.putExtra(XMPPService.CODE_ACTION, XMPPService.NEW_IMAGE_MESSAGE);
+        i.putExtra(XMPPService.MESSAGE_TO, user_id);
+        i.putExtra(XMPPService.MESSAGE_BODY, filename);
+        startService(i);
+    }
 
-	@Override
-	public void onLoadListener(Object object) {
-		// TODO Auto-generated method stub
-		items = (ArrayList<User>) object;
-		adapter.items = items;
-		adapter.notifyDataSetChanged();
-	}
-	
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		gps = new GPSTracker(this);
-		if(!gps.canGetLocation())Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
-		super.onResume();
-	}
+    @Override
+    public void onLoadListener(Object object) {
+        // TODO Auto-generated method stub
+        items = (ArrayList<User>) object;
+        adapter.items = items;
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        gps = new GPSTracker(this);
+        if (!gps.canGetLocation()) Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
+        super.onResume();
+    }
 
 }
