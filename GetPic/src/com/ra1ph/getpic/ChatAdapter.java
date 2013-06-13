@@ -3,11 +3,16 @@ package com.ra1ph.getpic;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.ra1ph.getpic.image.ImageAsync;
 import com.ra1ph.getpic.message.Message;
 
@@ -23,10 +28,19 @@ import java.util.ArrayList;
 public class ChatAdapter extends BaseAdapter {
     private final Activity context;
     public ArrayList<Message> messages;
+    public int maxWidth,maxHeight;
+    ImageLoader imageLoader;
 
     public ChatAdapter(ArrayList<Message> messages, Activity context){
         this.messages = messages;
         this.context = context;
+        Display display = context.getWindowManager().getDefaultDisplay();
+        maxWidth = display.getWidth()/2;
+        maxHeight = display.getHeight()/2;
+
+        imageLoader = ImageLoader.getInstance();
+        ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(context);
+        imageLoader.init(config);
     }
 
     @Override
@@ -63,8 +77,15 @@ public class ChatAdapter extends BaseAdapter {
         image.setImageResource(0);
             image.setImageDrawable(null);
         }else if(messages.get(position).type== Message.MessageType.IMAGE) {
-        String path = context.getCacheDir().getPath()+"/"+messages.get(position).body;
-		image.setImageBitmap(BitmapFactory.decodeFile(path));
+        String path = "file://"+context.getExternalCacheDir().getPath()+"/"+messages.get(position).body;
+
+        /*ImageAsync loader = new ImageAsync(image,context,maxWidth,maxHeight);
+        loader.execute(path);*/
+
+            DisplayImageOptions options1 = new     DisplayImageOptions.Builder().showStubImage(R.drawable.ic_launcher)
+                    .showImageForEmptyUri(R.drawable.ic_launcher).cacheInMemory().cacheOnDisc().build();
+            imageLoader.displayImage(path,image,options1);
+
         text.setText("");
         }
 

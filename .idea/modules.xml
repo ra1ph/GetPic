@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GetPic/GetPic.iml" filepath="$PROJECT_DIR$/GetPic/GetPic.iml" />
       <module fileurl="file://$PROJECT_DIR$/GetPic/contrib/MenuDrawer/MenuDrawer.iml" filepath="$PROJECT_DIR$/GetPic/contrib/MenuDrawer/MenuDrawer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Android-Universal-Image-Loader/library/library.iml" filepath="$PROJECT_DIR$/../Android-Universal-Image-Loader/library/library.iml" />
     </modules>
   </component>
 </project>

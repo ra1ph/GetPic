@@ -139,8 +139,8 @@ public class MapTask extends AsyncTask<Void, Void, Void> {
     }
 
     public String BMPtoFile(Bitmap bitmap) {
-		File f = new File(context.getCacheDir()+MAP_PATH, filename);
-		File dir = new File(context.getCacheDir(), MAP_PATH);
+		File f = new File(context.getExternalCacheDir()+MAP_PATH, filename);
+		File dir = new File(context.getExternalCacheDir(), MAP_PATH);
 		try {
 			
 			dir.mkdirs();

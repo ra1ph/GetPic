@@ -127,7 +127,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 					connection.sendPacket(message);
                     sendChatBroadcast(ChatActivity.MESSAGE_SENDED);
 				} else if (mes.type == MessageType.IMAGE) {
-					fileTransfer(new File(context.getCacheDir(), mes.body),
+					fileTransfer(new File(context.getExternalCacheDir(), mes.body),
 							mes.user_id);
 				}
                 helper.addWritable(mes);
@@ -251,7 +251,13 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 			e.printStackTrace();
 		}
 		while (!transfer.isDone()) {
-			if (transfer.getStatus().equals(FileTransfer.Status.error)) {
+            if(transfer.getStatus().equals(FileTransfer.Status.in_progress)){
+                double percents = ((int) (transfer.getProgress()*10000)) / 100.0;
+                //percents is 100.0 after 1 cycle
+                sendBroadcast(MainActivity.PROGRESS_UPDATE,(int)percents);
+                Log.i(Constants.DEBUG_TAG, "Filetransfer Progress: "+percents + " Status: "+transfer.getStatus().toString());
+            }
+			else if (transfer.getStatus().equals(FileTransfer.Status.error)) {
 				System.out.println("ERROR!!! " + transfer.getError());
 			} else if (transfer.getStatus().equals(
 					FileTransfer.Status.cancelled)
@@ -441,9 +447,8 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 			@Override
 			public void run() {
 				IncomingFileTransfer transfer = request.accept();
-				File mf = Environment.getExternalStorageDirectory();
 				String name = UUID.randomUUID().toString();
-				File file = new File(context.getCacheDir(), name);
+				File file = new File(context.getExternalCacheDir(), name);
 				try {
 					transfer.recieveFile(file);
 					boolean isOK = true;
@@ -543,6 +548,13 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		intent.putExtra(MainActivity.KEY_ACTION, ACTION);
 		context.sendBroadcast(intent);
 	}
+
+    private void sendBroadcast(int ACTION, int progress) {
+        Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+        intent.putExtra(MainActivity.KEY_ACTION, ACTION);
+        intent.putExtra(MainActivity.PROGRESS_VALUE,progress);
+        context.sendBroadcast(intent);
+    }
 	
 	private void sendLogoutBroadcast() {
 		Intent intent = new Intent(SuperActivity.LOGOUT_BROADCAST_ACTION);

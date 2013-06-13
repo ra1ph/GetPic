@@ -39,6 +39,7 @@ public class MainActivity extends SuperActivity implements LoadListener {
     private static final int CAMERA_PIC_REQUEST = 2500;
     private static final int PICTURE_RESULT = 9;
     private static final String TEMP_FILENAME = "temp";
+    public static final String PROGRESS_VALUE = "progressValue";
     private String send_user_id = null;
     private SharedPreferences mPrefs;
     private ListView imageList;
@@ -53,6 +54,7 @@ public class MainActivity extends SuperActivity implements LoadListener {
     public final static String KEY_ACTION = "action";
     public final static int UPDATE_ALL = 0x0010;
     public static final int PHOTO_SENDED = 0x0020;
+    public static final int PROGRESS_UPDATE = 0x0030;
 
     private String BOT_JID = "ra1ph@jabber.ru/Smack";
     private static final String BOT_JID1 = "kakaka1@jabber.ru/Smack";
@@ -126,6 +128,9 @@ public class MainActivity extends SuperActivity implements LoadListener {
                     case PHOTO_SENDED:
                         progress.dismiss();
                         break;
+                    case PROGRESS_UPDATE:
+                        int prog = intent.getIntExtra(PROGRESS_VALUE,0);
+                        progress.setProgress(prog);
                 }
             }
         };
@@ -159,7 +164,7 @@ public class MainActivity extends SuperActivity implements LoadListener {
     }
 
     public String BMPtoFile(Bitmap bitmap) {
-        File f = new File(this.getCacheDir(), UUID.randomUUID().toString());
+        File f = new File(this.getExternalCacheDir(), UUID.randomUUID().toString());
         try {
             f.createNewFile();
 
@@ -201,9 +206,11 @@ public class MainActivity extends SuperActivity implements LoadListener {
     }
 
     public void sendImage(String user_id, String filename) {
-
-        progress = ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
+        progress = new ProgressDialog(MainActivity.this);
+        progress.setMax(100);
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progress.setCancelable(false);
+        progress.show();
 
         Intent i = new Intent(MainActivity.this, XMPPService.class);
         i.putExtra(XMPPService.CODE_ACTION, XMPPService.NEW_IMAGE_MESSAGE);

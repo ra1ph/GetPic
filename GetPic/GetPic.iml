@@ -16,6 +16,7 @@
     <orderEntry type="library" name="android-support-v4" level="project" />
     <orderEntry type="module" module-name="MenuDrawer" />
     <orderEntry type="library" name="asmack-android-7-0.8" level="project" />
+    <orderEntry type="module" module-name="library" />
   </component>
 </module>
 

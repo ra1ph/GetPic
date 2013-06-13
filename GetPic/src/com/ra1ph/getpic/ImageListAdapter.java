@@ -8,6 +8,9 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.util.TypedValue;
 import android.view.Display;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.ra1ph.getpic.database.DBHelper;
 import com.ra1ph.getpic.image.EXIFProcessor;
 import com.ra1ph.getpic.image.ImageAsync;
@@ -32,7 +35,8 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 
 public class ImageListAdapter extends BaseAdapter {
-	public ArrayList<User> items;	
+    private final ImageLoader imageLoader;
+    public ArrayList<User> items;
 	Activity context;
 	Bitmap cap;
     private int mapWidth,mapHeight;
@@ -48,6 +52,9 @@ public class ImageListAdapter extends BaseAdapter {
 	public ImageListAdapter(Activity context, ArrayList<User> items) {
 		this.context=context;
 		this.items = items;
+        imageLoader = ImageLoader.getInstance();
+        ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(context);
+        imageLoader.init(config);
 		cap = BitmapFactory.decodeResource(context.getResources(), R.drawable.cap);
         SharedPreferences mPrefs = context.getSharedPreferences(MainActivity.PREFS_NAME, MainActivity.MODE_PRIVATE);
         mapWidth = mPrefs.getInt(MAP_WIDTH,0);
@@ -94,16 +101,21 @@ public class ImageListAdapter extends BaseAdapter {
 		final RelativeLayout mapLay = (RelativeLayout) view.findViewById(R.id.map_lay);
 		final RelativeLayout bar = (RelativeLayout) view.findViewById(R.id.layout_bar);
 		
-		String path = context.getCacheDir().getPath()+"/"+items.get(position).picture;
-		String pathMap = context.getCacheDir().getPath()+MapTask.MAP_PATH+items.get(position).picture;
+		String path = "file://"+context.getExternalCacheDir().getPath()+"/"+items.get(position).picture;
+		String pathMap = "file://"+context.getExternalCacheDir().getPath()+MapTask.MAP_PATH+items.get(position).picture;
 		
-		image.setImageBitmap(cap);
-		ImageAsync loader = new ImageAsync(image,context);
+		/*image.setImageBitmap(cap);
+		ImageAsync loader = new ImageAsync(image,context,mapWidth,mapHeight);
 		loader.execute(path);
 		
-		ImageAsync loaderMap = new ImageAsync(mapView,context);
-		loaderMap.execute(pathMap);
-		
+		ImageAsync loaderMap = new ImageAsync(mapView,context,mapWidth,mapHeight);
+		loaderMap.execute(pathMap);            */
+
+        DisplayImageOptions options1 = new     DisplayImageOptions.Builder().showStubImage(R.drawable.ic_launcher)
+                .showImageForEmptyUri(R.drawable.ic_launcher).cacheInMemory().cacheOnDisc().build();
+        imageLoader.displayImage(path,image,options1);
+        imageLoader.displayImage(pathMap,mapView,options1);
+
 		image.setOnClickListener(new OnClickListener() {
 			
 			@Override
