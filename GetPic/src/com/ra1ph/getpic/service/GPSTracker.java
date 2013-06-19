@@ -93,12 +93,13 @@ public class GPSTracker extends Service implements LocationListener {
 	                    }
 	                }
 	            }
+                Log.d("myLog", "Location is "+Double.toString(location.getLatitude())+"     "+Double.toString(location.getLongitude()));
 	 
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 	        
-	        Log.d("myLog", "Location is "+Double.toString(location.getLatitude())+"     "+Double.toString(location.getLongitude()));
+
 	 
 	        return location;
 	    }

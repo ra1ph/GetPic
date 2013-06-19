@@ -54,6 +54,7 @@ public class SuperActivity extends Activity {
 				// TODO Auto-generated method stub
 				switch (arg2) {
 				case CLEAR_ALL:
+                    sendGetPic();
 					break;
 				case ABOUT:
 					break;
@@ -73,6 +74,12 @@ public class SuperActivity extends Activity {
 		startService(i);
 	}
 
+    private void sendGetPic(){
+        Intent i = new Intent(SuperActivity.this, XMPPService.class);
+        i.putExtra(XMPPService.CODE_ACTION, XMPPService.GET_PICTURE);
+        startService(i);
+    }
+
 	private void unregisterBroadcast() {
 		unregisterReceiver(br2);
 	}
@@ -81,10 +88,9 @@ public class SuperActivity extends Activity {
 		br2 = new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
 				Intent i = new Intent(SuperActivity.this, LoginActivity.class);
-				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 				i.putExtra(LoginActivity.IS_LOGOUT, true);
 				startActivity(i);
+                finish();
 			}
 		};
 		IntentFilter intFilt = new IntentFilter(LOGOUT_BROADCAST_ACTION);

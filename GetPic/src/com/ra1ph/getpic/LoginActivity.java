@@ -33,20 +33,29 @@ public class LoginActivity extends Activity {
 	BroadcastReceiver br;
 	String login,pass;
     ProgressDialog progress;
+    boolean isLogout;
+    EditText log;
+    EditText password;
 
-	public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastauth";
+    public final static String BROADCAST_ACTION = "com.ra1ph.getpic.broadcastauth";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		setContentView(R.layout.login);
 		registerBroadcast();
-		boolean isLogout = getIntent().getBooleanExtra(IS_LOGOUT, false);
+		isLogout = getIntent().getBooleanExtra(IS_LOGOUT, false);
 		mPrefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-		final EditText log = (EditText) findViewById(R.id.login);
-		final EditText password = (EditText) findViewById(R.id.pass);
+		log = (EditText) findViewById(R.id.login);
+		password = (EditText) findViewById(R.id.pass);
 		login = mPrefs.getString(LOGIN, null);
 		pass = mPrefs.getString(PASS, null);
+        if(isLogout){
+            mPrefs.edit()
+                    .remove(LOGIN)
+                    .remove(PASS)
+                    .commit();
+        }
 		if ((login != null) && (pass != null)) {
 			log.setText(login);
 			password.setText(pass);
@@ -113,7 +122,19 @@ public class LoginActivity extends Activity {
 		registerReceiver(br, intFilt);
 	}
 
-	private void sendAuth(String login, String pass) {
+    @Override
+    protected void onResume() {
+        super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
+        login = mPrefs.getString(LOGIN, null);
+        pass = mPrefs.getString(PASS, null);
+        if ((login != null) && (pass != null)) {
+            log.setText(login);
+            password.setText(pass);
+            sendAuth(login, pass);
+        }
+    }
+
+    private void sendAuth(String login, String pass) {
         progress=ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
         progress.setCancelable(false);
 
@@ -127,6 +148,7 @@ public class LoginActivity extends Activity {
 	private void nextActivity() {
 		Intent i = new Intent(this, MainActivity.class);
 		startActivity(i);
+        finish();
 	}
 	
 	@Override

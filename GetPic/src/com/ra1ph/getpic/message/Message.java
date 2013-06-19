@@ -23,8 +23,8 @@ public class Message implements Writable, Loadable {
 	int Type;
 
 	public enum MessageType {
-		TEXT, IMAGE
-	};
+		TEXT, IMAGE,GETPIC;
+    };
 
 	public MessageType type;
 

@@ -17,6 +17,7 @@
     <orderEntry type="module" module-name="MenuDrawer" />
     <orderEntry type="library" name="asmack-android-7-0.8" level="project" />
     <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="Pull-To-Refresh" />
   </component>
 </module>
 

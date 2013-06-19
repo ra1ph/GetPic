@@ -1,5 +1,6 @@
 package com.ra1ph.getpic;
 
+import android.app.ProgressDialog;
 import com.ra1ph.getpic.service.XMPPService;
 
 import android.app.Activity;
@@ -33,6 +34,7 @@ public class RegisterActivity extends Activity {
 	public static final String IS_LOGOUT = "is_logout";
 	
 	String log,password,mail;
+    ProgressDialog progress;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +60,20 @@ public class RegisterActivity extends Activity {
 				sendReg(log, password,mail);
 			}
 		});
+        registerBroadcast();
 	}
-	
-	
-	private void sendReg(String login, String pass, String email) {
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();    //To change body of overridden methods use File | Settings | File Templates.
+        unregisterBroadcast();
+    }
+
+    private void sendReg(String login, String pass, String email) {
+
+        progress=ProgressDialog.show(this, "Please wait", "Loading please wait..", true);
+        progress.setCancelable(false);
+
 		Intent i = new Intent(RegisterActivity.this, XMPPService.class);
 		i.putExtra(XMPPService.CODE_ACTION, XMPPService.REG_USER);
 		i.putExtra(LOGIN, login);
@@ -77,13 +89,14 @@ public class RegisterActivity extends Activity {
 	private void registerBroadcast() {
 		br = new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
+                if(progress!=null)progress.dismiss();
 				int action = intent.getIntExtra(REG, -1);
 				switch (action) {
 				case SUCCESS:
 					mPrefs.edit().putString(LOGIN, log)
 					.putString(PASS, password)
 					.commit();
-					nextActivity();
+					finish();
 					break;
 
 				case CONNECTION_FAIL:

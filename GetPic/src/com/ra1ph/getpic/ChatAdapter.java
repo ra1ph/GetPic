@@ -1,10 +1,6 @@
 package com.ra1ph.getpic;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +9,6 @@ import android.widget.*;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.ra1ph.getpic.image.ImageAsync;
 import com.ra1ph.getpic.message.Message;
 
 import java.util.ArrayList;

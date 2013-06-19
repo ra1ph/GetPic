@@ -48,7 +48,7 @@
             android:src="@drawable/shot"
             android:id="@+id/shot_btn"/>
         
-        <ListView 
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/splitter"
@@ -56,6 +56,7 @@
             android:layout_margin="@dimen/listview_margin"
             android:id="@+id/image_list"
             android:divider="@null"
+            android:cacheColorHint="#00000000"
             android:dividerHeight="30dip"/>
         
     </RelativeLayout>

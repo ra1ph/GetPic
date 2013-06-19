@@ -2,19 +2,14 @@ package com.ra1ph.getpic.service;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import android.os.Vibrator;
 import com.ra1ph.getpic.*;
+import com.ra1ph.getpic.utils.Notificator;
 import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.filter.AndFilter;
-import org.jivesoftware.smack.filter.PacketFilter;
-import org.jivesoftware.smack.filter.PacketIDFilter;
-import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.provider.PrivacyProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -59,19 +54,19 @@ import com.ra1ph.getpic.users.User;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.ReceiverCallNotAllowedException;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
 public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		implements PacketListener, MessageListener, ChatManagerListener,
 		FileTransferListener {
 
+    private static final String GET_XML="<query xmlns='jabber:iq:getpic'/>";
+
 	public static final int ACTION_LOGIN = 0x0010;
 	public static final int ACTION_REGISTER = 0x0020;
 	private static final long TIME_SLEEP = 100;
-    private static final String SERVER = "jabber.ru";
+    private static final String SERVER = "192.168.139.118";
 	ConnectionConfiguration config;
 	XMPPConnection connection;
 	ChatManager chatManager;
@@ -81,7 +76,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 	ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
 	AtomicBoolean isActive = new AtomicBoolean();
 	AtomicBoolean isLogout = new AtomicBoolean();
-    Vibrator v;
+    Notificator notificator;
 
     public XMPPTask(Context context, String login, String pass) {
 		// TODO Auto-generated constructor stub
@@ -91,7 +86,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		isActive.set(true);
 		messages = new ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message>();
 
-        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        notificator = Notificator.getInstance(context);
 
     }
 
@@ -113,9 +108,9 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
             if(!connection.isConnected())connect();
             if(!connection.isAuthenticated())login(login,pass);
 
-            Presence p = new Presence(Presence.Type.available);
+            /*Presence p = new Presence(Presence.Type.available);
             p.setStatus("Available");
-            connection.sendPacket(p);
+            connection.sendPacket(p);     */
 
 			com.ra1ph.getpic.message.Message mes = null;
 			mes = messages.poll();
@@ -129,7 +124,9 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 				} else if (mes.type == MessageType.IMAGE) {
 					fileTransfer(new File(context.getExternalCacheDir(), mes.body),
 							mes.user_id);
-				}
+				} else if (mes.type == MessageType.GETPIC){
+                    getPicture();
+                }
                 helper.addWritable(mes);
 
 			} else
@@ -142,8 +139,21 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		}else if(params[0]==ACTION_REGISTER) register(login,pass,email);
 		return null;
 	}
-	
-	public void register(String username, String pass, String email){
+
+    private void getPicture() {
+        //To change body of created methods use File | Settings | File Templates.
+        IQ iq = new IQ() {
+            @Override
+            public String getChildElementXML() {
+                return GET_XML;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
+        iq.setTo(MainActivity.BOT_JID);
+        connection.sendPacket(iq);
+
+    }
+
+    public void register(String username, String pass, String email){
 		AccountManager am = new AccountManager(connection);
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put("username", username);
@@ -471,22 +481,22 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 					}
 					if (isOK) {
                         try{
-                        v.vibrate(1000);
                         }catch(Exception e){
 
                         }
 						com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
-								request.getRequestor(), name,
+                                request.getDescription(), name,
 								com.ra1ph.getpic.message.Message.DIRECTION_IN,
 								Writable.ADD);
 						mes.type = MessageType.IMAGE;
 						helper.addWritable(mes);
-						User user = new User(request.getRequestor(), name,
+						User user = new User(request.getDescription(), name,
 								Writable.ADD);
 						helper.addWritable(user);
 						loadMap(name);
 						
 						Log.d(Constants.DEBUG_TAG, "is OK");
+                        notificator.notifyImage(request.getRequestor());
 					}
 
 				} catch (Exception e) {
@@ -522,7 +532,6 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 					message.getFrom(), message.getBody(),
 					com.ra1ph.getpic.message.Message.DIRECTION_IN, Writable.ADD);
 			helper.addWritable(mes);
-            v.vibrate(1000);
 		}
 	}
 
@@ -538,7 +547,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 						com.ra1ph.getpic.message.Message.DIRECTION_IN,
 						Writable.ADD);
 				helper.addWritable(mes);
-                v.vibrate(1000);
+                notificator.notifyText(message.getFrom(),message.getBody());
 			}
 		}
 	}

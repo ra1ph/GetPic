@@ -11,6 +11,8 @@ import android.app.ProgressDialog;
 import android.content.*;
 import android.net.Uri;
 import android.provider.MediaStore;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import net.simonvt.menudrawer.MenuDrawer;
 
 import com.ra1ph.getpic.database.DBHelper;
@@ -42,7 +44,7 @@ public class MainActivity extends SuperActivity implements LoadListener {
     public static final String PROGRESS_VALUE = "progressValue";
     private String send_user_id = null;
     private SharedPreferences mPrefs;
-    private ListView imageList;
+    private PullToRefreshListView imageList;
     DBHelper helper;
     ArrayList<User> items;
     ImageListAdapter adapter;
@@ -56,9 +58,9 @@ public class MainActivity extends SuperActivity implements LoadListener {
     public static final int PHOTO_SENDED = 0x0020;
     public static final int PROGRESS_UPDATE = 0x0030;
 
-    private String BOT_JID = "ra1ph@jabber.ru/Smack";
-    private static final String BOT_JID1 = "kakaka1@jabber.ru/Smack";
-    private static final String BOT_JID2 = "ra1ph@jabber.ru/Smack";
+    public static final String BOT_JID = "getpicbot@127.0.0.1/Smack";
+    private static final String BOT_JID1 = "kakaka1@localhost/Smack";
+    private static final String BOT_JID2 = "ra1ph@localhost/Smack";
     private ProgressDialog progress;
     private Uri imageUri;
 
@@ -74,9 +76,11 @@ public class MainActivity extends SuperActivity implements LoadListener {
 
         mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String login = mPrefs.getString(LoginActivity.LOGIN, "");
-        if (login.equals("kakaka1")) BOT_JID = BOT_JID2;
-        else if (login.toLowerCase().equals("ra1ph")) BOT_JID = BOT_JID1;
-        imageList = (ListView) findViewById(R.id.image_list);
+
+        /*if (login.equals("kakaka1")) BOT_JID = BOT_JID2;
+        else if (login.toLowerCase().equals("ra1ph")) BOT_JID = BOT_JID1;    */
+
+        imageList = (PullToRefreshListView) findViewById(R.id.image_list);
         helper = new DBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
         items = new ArrayList<User>();
@@ -102,6 +106,22 @@ public class MainActivity extends SuperActivity implements LoadListener {
         gps = new GPSTracker(this);
         if (!gps.canGetLocation()) Log.d(Constants.DEBUG_TAG, "GPS IS NOT ENABLED!!!");
 
+        imageList.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                //To change body of implemented methods use File | Settings | File Templates.
+                sendGetPic();
+            }
+        });
+        imageList.setPullLabel(this.getResources().getString(R.string.pull_label));
+        imageList.setReleaseLabel(this.getResources().getString(R.string.release_label));
+
+    }
+
+    private void sendGetPic(){
+        Intent i = new Intent(MainActivity.this, XMPPService.class);
+        i.putExtra(XMPPService.CODE_ACTION, XMPPService.GET_PICTURE);
+        startService(i);
     }
 
     @Override
@@ -124,6 +144,7 @@ public class MainActivity extends SuperActivity implements LoadListener {
                     case UPDATE_ALL:
                         User.getUsers(MainActivity.this, helper);
                         Log.d("myLog", "updated all");
+                        imageList.onRefreshComplete();
                         break;
                     case PHOTO_SENDED:
                         progress.dismiss();

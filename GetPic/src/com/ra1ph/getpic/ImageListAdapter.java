@@ -6,33 +6,25 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Point;
-import android.util.TypedValue;
 import android.view.Display;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.ra1ph.getpic.database.DBHelper;
-import com.ra1ph.getpic.image.EXIFProcessor;
-import com.ra1ph.getpic.image.ImageAsync;
 import com.ra1ph.getpic.map.MapTask;
 import com.ra1ph.getpic.message.Message;
 import com.ra1ph.getpic.users.User;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 
 public class ImageListAdapter extends BaseAdapter {
     private final ImageLoader imageLoader;
@@ -55,7 +47,7 @@ public class ImageListAdapter extends BaseAdapter {
         imageLoader = ImageLoader.getInstance();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(context);
         imageLoader.init(config);
-		cap = BitmapFactory.decodeResource(context.getResources(), R.drawable.cap);
+		//cap = BitmapFactory.decodeResource(context.getResources(), R.drawable.cap);
         SharedPreferences mPrefs = context.getSharedPreferences(MainActivity.PREFS_NAME, MainActivity.MODE_PRIVATE);
         mapWidth = mPrefs.getInt(MAP_WIDTH,0);
         mapHeight = mPrefs.getInt(MAP_HEIGHT,0);
