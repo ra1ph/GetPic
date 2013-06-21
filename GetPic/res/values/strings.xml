@@ -7,5 +7,9 @@
     <string name="image_notify_text">Новое сообщение от пользователя</string>
     <string name="pull_label">Потяните...</string>
     <string name="release_label">Отпустите...</string>
+    <string name="wrong_auth">Неверный ввод</string>
+    <string name="wrong_login_password">Неправильные логин/пароль.</string>
+    <string name="error">Ошибка</string>
+    <string name="error_internet">Ошибка соединения. Проверьте подключение к сети.</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.ra1ph.getpic;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import com.ra1ph.getpic.service.XMPPService;
 
@@ -106,9 +107,17 @@ public class LoginActivity extends Activity {
 					break;
 
 				case CONNECTION_FAIL:
+                    AlertDialog dialog = new AlertDialog.Builder(LoginActivity.this).create();
+                    dialog.setTitle(getResources().getString(R.string.error));
+                    dialog.setMessage(getResources().getString(R.string.error_internet));
+                    dialog.show();
 					Log.d(Constants.DEBUG_TAG, "Connection FAIL!!");
 					break;
 				case FAIL:
+                    AlertDialog dialog2 = new AlertDialog.Builder(LoginActivity.this).create();
+                    dialog2.setTitle(getResources().getString(R.string.wrong_auth));
+                    dialog2.setMessage(getResources().getString(R.string.wrong_login_password));
+                    dialog2.show();
 					Log.d(Constants.DEBUG_TAG, "Auth FAIL!!");
 					break;
 				case ALREDY_CONNECTED:

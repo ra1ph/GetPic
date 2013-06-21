@@ -57,8 +57,9 @@ public class MainActivity extends SuperActivity implements LoadListener {
     public final static int UPDATE_ALL = 0x0010;
     public static final int PHOTO_SENDED = 0x0020;
     public static final int PROGRESS_UPDATE = 0x0030;
+    public static final int PHOTO_RECEIVED = 0x0040;
 
-    public static final String BOT_JID = "getpicbot@127.0.0.1/Smack";
+    public static final String BOT_JID = "getpicbot@ua0022903/Smack";
     private static final String BOT_JID1 = "kakaka1@localhost/Smack";
     private static final String BOT_JID2 = "ra1ph@localhost/Smack";
     private ProgressDialog progress;
@@ -144,7 +145,6 @@ public class MainActivity extends SuperActivity implements LoadListener {
                     case UPDATE_ALL:
                         User.getUsers(MainActivity.this, helper);
                         Log.d("myLog", "updated all");
-                        imageList.onRefreshComplete();
                         break;
                     case PHOTO_SENDED:
                         progress.dismiss();
@@ -152,6 +152,9 @@ public class MainActivity extends SuperActivity implements LoadListener {
                     case PROGRESS_UPDATE:
                         int prog = intent.getIntExtra(PROGRESS_VALUE,0);
                         progress.setProgress(prog);
+                    case PHOTO_RECEIVED:
+                        imageList.onRefreshComplete();
+                        User.getUsers(MainActivity.this, helper);
                 }
             }
         };

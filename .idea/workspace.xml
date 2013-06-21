@@ -25,70 +25,19 @@
     </option>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51b17301-c3fa-4444-a3c7-39ddcce291a9" name="Default" comment="[add] pull">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GetpicIQProvider.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/NickUtils.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/Notificator.java" />
-      <change type="DELETED" beforePath="C:\Users\ra1ph\git\GetPic\GetPic\bin\classes\com\ra1ph\getpic\ImageListAdapter$4.class" afterPath="" />
-      <change type="DELETED" beforePath="C:\Users\ra1ph\git\GetPic\GetPic\bin\classes\com\ra1ph\getpic\Manifest.class" afterPath="" />
-      <change type="DELETED" beforePath="C:\Users\ra1ph\git\GetPic\GetPic\bin\classes\com\ra1ph\getpic\ImageListAdapter$1.class" afterPath="" />
-      <change type="DELETED" beforePath="C:\Users\ra1ph\git\GetPic\GetPic\bin\classes\com\ra1ph\getpic\Manifest$permission.class" afterPath="" />
-      <change type="DELETED" beforePath="C:\Users\ra1ph\git\GetPic\GetPic\bin\classes\com\ra1ph\getpic\ImageListAdapter$2.class" afterPath="" />
-      <change type="DELETED" beforePath="C:\Users\ra1ph\git\GetPic\GetPic\bin\classes\com\ra1ph\getpic\ImageListAdapter$3.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/BuildConfig.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/BuildConfig.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/map/MapTask.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/map/MapTask.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/service/XMPPTask$2.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/service/XMPPTask$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/ImageListAdapter$ViewHolder.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/ImageListAdapter$ViewHolder.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MessageProcessor.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MessageProcessor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GPSTracker.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GPSTracker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MainActivity$1.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MainActivity$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$style.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$style.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$styleable.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$styleable.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/SuperActivity$1.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/SuperActivity$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/service/XMPPTask.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/service/XMPPTask.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$string.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$string.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity$3.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity$3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/ImageListAdapter.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/ImageListAdapter.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/map/MapTask$MapRequest.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/map/MapTask$MapRequest.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/R.txt" afterPath="$PROJECT_DIR$/GetPic/bin/R.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/users/User.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/users/User.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/service/XMPPTask$1.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/service/XMPPTask$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$drawable.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$drawable.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$id.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$id.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/RegisterActivity.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/RegisterActivity.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/image/ImageAsync$1.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/image/ImageAsync$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MainActivity.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MainActivity.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPService.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/RegisterActivity$1.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/RegisterActivity$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/ChatAdapter.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/ChatAdapter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$menu.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$menu.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/SuperActivity.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/SuperActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/ImageListAdapter.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/ImageListAdapter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity$1.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/AndroidManifest.xml" afterPath="$PROJECT_DIR$/GetPic/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/SuperActivity.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/SuperActivity.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/image/ImageAsync.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/image/ImageAsync.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/SuperActivity$2.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/SuperActivity$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/message/Message.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/message/Message.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/message/Message.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/message/Message.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MainActivity$2.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/MainActivity$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$dimen.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$dimen.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/res/values/strings.xml" afterPath="$PROJECT_DIR$/GetPic/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity$2.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/LoginActivity$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$layout.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/R$layout.class" />
+    <list default="true" id="51b17301-c3fa-4444-a3c7-39ddcce291a9" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/LoginActivity.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/LoginActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/database/DBLoader.class" afterPath="$PROJECT_DIR$/GetPic/bin/classes/com/ra1ph/getpic/database/DBLoader.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" afterPath="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GetPic/res/values/strings.xml" afterPath="$PROJECT_DIR$/GetPic/res/values/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="GetPic.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/fragment.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371629490860" ignored="false" />
     <file path="/ChatActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371019645601" ignored="false" />
     <file path="/ChatAdapter.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371127898538" ignored="false" />
-    <file path="/Dummy.txt" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371646714461" ignored="false" />
+    <file path="/Dummy.txt" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371794998352" ignored="false" />
     <file path="/chatlist_item.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371016773585" ignored="false" />
     <file path="/Message.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371622884333" ignored="false" />
     <file path="/DBLoader.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1370951659113" ignored="false" />
@@ -97,10 +46,10 @@
     <file path="/SuperActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371639847295" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371458423507" ignored="false" />
     <file path="/ImageListAdapter.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371127797184" ignored="false" />
-    <file path="/LoginActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371640250096" ignored="false" />
-    <file path="/MainActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371638573615" ignored="false" />
-    <file path="/XMPPTask.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371634954577" ignored="false" />
-    <file path="/MessageProcessor.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371019187524" ignored="false" />
+    <file path="/LoginActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371791379680" ignored="false" />
+    <file path="/MainActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371794772210" ignored="false" />
+    <file path="/XMPPTask.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371794745704" ignored="false" />
+    <file path="/MessageProcessor.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371794844789" ignored="false" />
     <file path="/activity_main.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371638259047" ignored="false" />
     <file path="/dimens.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371020687326" ignored="false" />
     <file path="/listview_item.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371020809254" ignored="false" />
@@ -113,14 +62,15 @@
     <file path="D:/Server/openfire_src/src/plugins/sip/src/java/org/jivesoftware/openfire/sip/tester/stack/SipManager.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371460047125" ignored="false" />
     <file path="D:/Server/openfire_src/src/plugins/contentFilter/src/test/java/org/jivesoftware/wildfire/plugin/ContentFilterTest.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371460156433" ignored="false" />
     <file path="D:/Server/openfire_src/src/web/WEB-INF/classes/openfire_init.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371461162323" ignored="false" />
-    <file path="/MainThread.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371635223856" ignored="false" />
-    <file path="D:/Server/GetPicBot/src/com/ra1ph/MainThread.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371635224775" ignored="false" />
+    <file path="/MainThread.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371792999952" ignored="false" />
+    <file path="D:/Server/GetPicBot/src/com/ra1ph/MainThread.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371793719047" ignored="false" />
     <file path="/XMPPService.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371623401191" ignored="false" />
     <file path="/GetpicIQProvider.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371630742549" ignored="false" />
     <file path="D:/Server/GetPicBot/src/com/ra1ph/GetpicIQProvider.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371630743326" ignored="false" />
     <file path="/RegisterActivity.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371638822709" ignored="false" />
     <file path="$PROJECT_DIR$/GetPic/gen/com/ra1ph/getpic/Manifest.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371639149229" ignored="false" />
     <file path="$PROJECT_DIR$/GetPic/gen/com/ra1ph/getpic/R.java" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371639149229" ignored="false" />
+    <file path="D:/Server/GetPicBot/.idea/workspace.xml" changelist="51b17301-c3fa-4444-a3c7-39ddcce291a9" time="1371794866426" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +86,7 @@
   </component>
   <component name="DebuggerManager">
     <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
-      <breakpoint url="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/map/MapTask.java" line="52" class="com.ra1ph.getpic.map.MapTask" package="com.ra1ph.getpic.map">
+      <breakpoint url="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" line="103" class="com.ra1ph.getpic.service.XMPPTask" package="com.ra1ph.getpic.service">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -151,22 +101,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/Notificator.java" line="68" class="com.ra1ph.getpic.utils.Notificator" package="com.ra1ph.getpic.utils">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="REMOVE_AFTER_HIT" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" line="127" class="com.ra1ph.getpic.service.XMPPTask" package="com.ra1ph.getpic.service">
+      <breakpoint url="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" line="458" class="com.ra1ph.getpic.service.XMPPTask$3" package="com.ra1ph.getpic.service">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -182,7 +117,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </line_breakpoints>
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -219,6 +153,7 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -231,7 +166,28 @@
       <file leaf-file-name="XMPPTask.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="67" selection-start="3225" selection-end="3225" vertical-scroll-proportion="0.0">
+            <state line="72" column="13" selection-start="3288" selection-end="3288" vertical-scroll-proportion="-6.4">
+              <folding>
+                <element signature="e#5495#5711#0" expanded="true" />
+                <element signature="e#5700#5701#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Notificator.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/Notificator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="68" column="0" selection-start="2899" selection-end="2899" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MapTask.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/map/MapTask.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="52" column="0" selection-start="1662" selection-end="1662" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -239,38 +195,29 @@
       </file>
       <file leaf-file-name="activity_main.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GetPic/res/layout/activity_main.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
           <provider selected="true" editor-type-id="text-editor">
             <state line="59" column="41" selection-start="2446" selection-end="2446" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
         </entry>
       </file>
-      <file leaf-file-name="pull_refresh_strings.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/GetPic/contrib/Pull-To-Refresh/res/values/pull_refresh_strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="85" selection-start="471" selection-end="471" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pull_refresh_strings.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/GetPic/contrib/Pull-To-Refresh/res/values-ru/pull_refresh_strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="38" selection-start="293" selection-end="293" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="72" column="50" selection-start="2666" selection-end="2666" vertical-scroll-proportion="0.0">
+            <state line="146" column="54" selection-start="5320" selection-end="5320" vertical-scroll-proportion="0.4073359">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MessageProcessor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MessageProcessor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="36" column="55" selection-start="965" selection-end="965" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -285,10 +232,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LoginActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="LoginActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/LoginActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="132" column="49" selection-start="3817" selection-end="3817" vertical-scroll-proportion="0.4673077">
+            <state line="117" column="35" selection-start="3649" selection-end="3649" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -298,15 +245,6 @@
         <entry file="file://$PROJECT_DIR$/GetPic/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state line="28" column="45" selection-start="1124" selection-end="1124" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GPSTracker.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GPSTracker.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="84" column="41" selection-start="3200" selection-end="3200" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -339,7 +277,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/GetPic/gen/com/ra1ph/getpic/R.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/notify/Notificator.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/NickUtils.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/Notificator.java" />
@@ -348,13 +285,14 @@
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/ImageListAdapter.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GetpicIQProvider.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GPSTracker.java" />
-        <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" />
         <option value="$PROJECT_DIR$/GetPic/res/layout/activity_main.xml" />
-        <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/RegisterActivity.java" />
         <option value="$PROJECT_DIR$/GetPic/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/SuperActivity.java" />
         <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/LoginActivity.java" />
+        <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java" />
+        <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MessageProcessor.java" />
+        <option value="$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -390,7 +328,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
@@ -430,18 +367,19 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="project.structure.last.edited" value="Modules" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
-    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="OverrideImplement.combined" value="true" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="DEBUGGABLE_DEVICE" value="emulator-5554 (dev2.2)" />
+    <property name="recentsLimit" value="5" />
+    <property name="last_opened_file_path" value="D:/Server/GetPicBot" />
+    <property name="DEBUGGABLE_DEVICE" value="B153B7756DCC5308" />
     <property name="DEBUGGABLE_PROCESS" value="com.ra1ph.getpic" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="10mdpi" />
@@ -454,7 +392,7 @@
     <property name="ChangesBrowser.SHOW_FLATTEN" value="false" />
     <property name="AndroidLayoutSelectedEditor" value="text-editor" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="015F252702011012" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="B153B7756DCC5308" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="options.searchVisible" value="true" />
@@ -501,6 +439,19 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -526,19 +477,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -679,30 +617,30 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3289941" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289941" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6702254" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39976275" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32858837" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32265717" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.6710059" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.6702254" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32977462" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.67141163" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.67141163" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.67141163" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289941" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -749,7 +687,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="[add] UNiversalImageLoader" />
+    <option name="LAST_COMMIT_MESSAGE" value="[fix] refresh error" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -766,6 +704,7 @@
     <MESSAGE value="[add] chat+progressdialogs" />
     <MESSAGE value="[change] quality photo" />
     <MESSAGE value="[add] UNiversalImageLoader" />
+    <MESSAGE value="[fix] refresh error" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -775,31 +714,9 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/GetPic/libs/asmack-android-7-0.8.jar!/org/jivesoftware/smackx/provider/MUCUserProvider.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="11" selection-start="271" selection-end="271" vertical-scroll-proportion="0.2125" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/GetPic/libs/asmack-android-7-0.8.jar!/org/jivesoftware/smackx/provider/MUCOwnerProvider.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="11" selection-start="259" selection-end="259" vertical-scroll-proportion="0.2125" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/GetPic/libs/asmack-android-7-0.8.jar!/org/jivesoftware/smack/provider/ProviderManager.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="13" selection-start="174" selection-end="174" vertical-scroll-proportion="0.17708333" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/GPSTracker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="84" column="41" selection-start="3200" selection-end="3200" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="67" selection-start="3225" selection-end="3225" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -843,18 +760,11 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/GetPic/res/layout/activity_main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="41" selection-start="2446" selection-end="2446" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
       <provider editor-type-id="android-designer">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="50" selection-start="2666" selection-end="2666" vertical-scroll-proportion="0.0">
+        <state line="59" column="41" selection-start="2446" selection-end="2446" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -875,7 +785,45 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/LoginActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="132" column="49" selection-start="3817" selection-end="3817" vertical-scroll-proportion="0.4673077">
+        <state line="117" column="35" selection-start="3649" selection-end="3649" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/utils/Notificator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="0" selection-start="2899" selection-end="2899" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/map/MapTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="0" selection-start="1662" selection-end="1662" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/service/XMPPTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="72" column="13" selection-start="3288" selection-end="3288" vertical-scroll-proportion="-6.4">
+          <folding>
+            <element signature="e#5495#5711#0" expanded="true" />
+            <element signature="e#5700#5701#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MessageProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="55" selection-start="965" selection-end="965" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GetPic/src/com/ra1ph/getpic/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="146" column="54" selection-start="5320" selection-end="5320" vertical-scroll-proportion="0.4073359">
           <folding />
         </state>
       </provider>

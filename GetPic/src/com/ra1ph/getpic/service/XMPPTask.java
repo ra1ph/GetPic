@@ -66,7 +66,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 	public static final int ACTION_LOGIN = 0x0010;
 	public static final int ACTION_REGISTER = 0x0020;
 	private static final long TIME_SLEEP = 100;
-    private static final String SERVER = "192.168.139.118";
+    private static final String SERVER = "31.131.18.161";
 	ConnectionConfiguration config;
 	XMPPConnection connection;
 	ChatManager chatManager;
@@ -163,7 +163,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		try {
 			am.createAccount(username, pass, attributes);
 			sendRegBroadcast(RegisterActivity.SUCCESS);
-		} catch (XMPPException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.d(Constants.DEBUG_TAG, "Register failed!!");
 			e.printStackTrace();
@@ -199,7 +199,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		// connection.DEBUG_ENABLED = true;
 		try {
 			connection.connect();
-		} catch (XMPPException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			isActive.set(false);
@@ -217,7 +217,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 	public void login(String login, String pass){
 		try {
 			connection.login(login, pass);
-		} catch (XMPPException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			isActive.set(false);
@@ -257,7 +257,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 				.createOutgoingFileTransfer(user_id);
 		try {
 			transfer.sendFile(file, "foto");
-		} catch (XMPPException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		while (!transfer.isDone()) {
@@ -494,7 +494,7 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 								Writable.ADD);
 						helper.addWritable(user);
 						loadMap(name);
-						
+						sendBroadcast(MainActivity.PHOTO_RECEIVED);
 						Log.d(Constants.DEBUG_TAG, "is OK");
                         notificator.notifyImage(request.getRequestor());
 					}
