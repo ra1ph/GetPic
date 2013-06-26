@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.ra1ph.getpic.utils.DialogManager;
 import net.simonvt.menudrawer.MenuDrawer;
 
 import com.ra1ph.getpic.database.DBHelper;
@@ -38,6 +39,7 @@ import android.widget.ListView;
 public class MainActivity extends SuperActivity implements LoadListener {
 
     public static final String PREFS_NAME = "prefs";
+    public static final String ERROR_CODE = "errorCode";
     private static final int CAMERA_PIC_REQUEST = 2500;
     private static final int PICTURE_RESULT = 9;
     private static final String TEMP_FILENAME = "temp";
@@ -58,6 +60,7 @@ public class MainActivity extends SuperActivity implements LoadListener {
     public static final int PHOTO_SENDED = 0x0020;
     public static final int PROGRESS_UPDATE = 0x0030;
     public static final int PHOTO_RECEIVED = 0x0040;
+    public static final int ERROR = 0x0050;
 
     public static final String BOT_JID = "getpicbot@ua0022903/Smack";
     private static final String BOT_JID1 = "kakaka1@localhost/Smack";
@@ -152,9 +155,14 @@ public class MainActivity extends SuperActivity implements LoadListener {
                     case PROGRESS_UPDATE:
                         int prog = intent.getIntExtra(PROGRESS_VALUE,0);
                         progress.setProgress(prog);
+                        break;
                     case PHOTO_RECEIVED:
                         imageList.onRefreshComplete();
                         User.getUsers(MainActivity.this, helper);
+                        break;
+                    case ERROR:
+                        DialogManager.errorDialog(MainActivity.this,intent.getStringExtra(ERROR_CODE));
+                        break;
                 }
             }
         };

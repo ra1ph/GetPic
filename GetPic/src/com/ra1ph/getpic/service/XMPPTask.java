@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ra1ph.getpic.*;
+import com.ra1ph.getpic.utils.DialogManager;
 import com.ra1ph.getpic.utils.Notificator;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.*;
@@ -23,11 +24,7 @@ import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-import org.jivesoftware.smackx.packet.ChatStateExtension;
-import org.jivesoftware.smackx.packet.LastActivity;
-import org.jivesoftware.smackx.packet.OfflineMessageInfo;
-import org.jivesoftware.smackx.packet.OfflineMessageRequest;
-import org.jivesoftware.smackx.packet.SharedGroupsInfo;
+import org.jivesoftware.smackx.packet.*;
 import org.jivesoftware.smackx.provider.AdHocCommandDataProvider;
 import org.jivesoftware.smackx.provider.DataFormProvider;
 import org.jivesoftware.smackx.provider.DelayInformationProvider;
@@ -142,14 +139,22 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 
     private void getPicture() {
         //To change body of created methods use File | Settings | File Templates.
-        IQ iq = new IQ() {
+        /*IQ iq = new IQ() {
             @Override
             public String getChildElementXML() {
                 return GET_XML;  //To change body of implemented methods use File | Settings | File Templates.
             }
         };
         iq.setTo(MainActivity.BOT_JID);
-        connection.sendPacket(iq);
+        connection.sendPacket(iq);  */
+
+        GetPicEvent event = new GetPicEvent();
+        event.setGetPictureRequest(true);
+        Message msg = new Message();
+        msg.addExtension(event);
+        msg.setTo(MainActivity.BOT_JID);
+        msg.setFrom(connection.getUser());
+        connection.sendPacket(msg);
 
     }
 
@@ -293,9 +298,12 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 
 	public void configure(ProviderManager pm) {
 
+        //GetPicService
+        pm.addExtensionProvider(GetPicEvent.ELEMENT_ROOT, GetPicEvent.NAMESPACE, new GetpicExtensionProvider());
+
 		// Private Data Storage
 		pm.addIQProvider("query", "jabber:iq:private",
-				new PrivateDataManager.PrivateDataIQProvider());
+                new PrivateDataManager.PrivateDataIQProvider());
 
 		// Time
 		try {
@@ -541,7 +549,14 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		if (arg0 instanceof Message) {
 			Log.d(Constants.DEBUG_TAG, "Packet in!");
 			Message message = (Message) arg0;
-			if (message.getBody() != null) {
+            if (message.getExtension(GetPicEvent.NAMESPACE)!=null){
+                GetPicEvent event = (GetPicEvent) message.getExtension(GetPicEvent.NAMESPACE);
+                if(event.getError()!=null){
+                    Log.d(Constants.DEBUG_TAG, event.getError());
+                    sendErrorBroadcast(event.getError());
+                    sendBroadcast(MainActivity.PHOTO_RECEIVED);
+                }
+            }else if (message.getBody() != null) {
 				com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
 						message.getFrom(), message.getBody(),
 						com.ra1ph.getpic.message.Message.DIRECTION_IN,
@@ -557,6 +572,13 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		intent.putExtra(MainActivity.KEY_ACTION, ACTION);
 		context.sendBroadcast(intent);
 	}
+
+    private void sendErrorBroadcast(String ERROR) {
+        Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+        intent.putExtra(MainActivity.KEY_ACTION, MainActivity.ERROR);
+        intent.putExtra(MainActivity.ERROR_CODE,ERROR);
+        context.sendBroadcast(intent);
+    }
 
     private void sendBroadcast(int ACTION, int progress) {
         Intent intent = new Intent(MainActivity.BROADCAST_ACTION);

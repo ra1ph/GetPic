@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import com.ra1ph.getpic.MainActivity;
+import com.ra1ph.getpic.utils.DialogManager;
 
 public class LoginActivity extends Activity {
 
@@ -107,17 +108,11 @@ public class LoginActivity extends Activity {
 					break;
 
 				case CONNECTION_FAIL:
-                    AlertDialog dialog = new AlertDialog.Builder(LoginActivity.this).create();
-                    dialog.setTitle(getResources().getString(R.string.error));
-                    dialog.setMessage(getResources().getString(R.string.error_internet));
-                    dialog.show();
+                    DialogManager.errorDialog(LoginActivity.this,getResources().getString(R.string.error_internet));
 					Log.d(Constants.DEBUG_TAG, "Connection FAIL!!");
 					break;
 				case FAIL:
-                    AlertDialog dialog2 = new AlertDialog.Builder(LoginActivity.this).create();
-                    dialog2.setTitle(getResources().getString(R.string.wrong_auth));
-                    dialog2.setMessage(getResources().getString(R.string.wrong_login_password));
-                    dialog2.show();
+                    DialogManager.wrongAuthDialog(LoginActivity.this);
 					Log.d(Constants.DEBUG_TAG, "Auth FAIL!!");
 					break;
 				case ALREDY_CONNECTED:

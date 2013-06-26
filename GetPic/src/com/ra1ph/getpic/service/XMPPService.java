@@ -95,7 +95,7 @@ public class XMPPService extends Service {
 
     public void registerUser(String login, String pass, String email) {
         if ((task == null) || (!task.isActive.get())) {
-            task = new XMPPTask(this, login, pass);
+            task = new XMPPTask(this.getApplicationContext(), login, pass);
             task.email = email;
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, XMPPTask.ACTION_REGISTER);
         } else sendRegBroadcast(getApplicationContext(), RegisterActivity.ALREDY_CONNECTED);
@@ -103,7 +103,7 @@ public class XMPPService extends Service {
 
     public void startConnection(String login, String pass) {
         if ((task == null) || (!task.isActive.get())) {
-            task = new XMPPTask(this, login, pass);
+            task = new XMPPTask(this.getApplicationContext(), login, pass);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, XMPPTask.ACTION_LOGIN);
         } else sendBroadcast(getApplicationContext(), LoginActivity.ALREDY_CONNECTED);
     }
