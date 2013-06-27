@@ -55,87 +55,90 @@ import android.os.Build;
 import android.util.Log;
 
 public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
-		implements PacketListener, MessageListener, ChatManagerListener,
-		FileTransferListener {
+        implements PacketListener, MessageListener, ChatManagerListener,
+        FileTransferListener {
 
-    private static final String GET_XML="<query xmlns='jabber:iq:getpic'/>";
+    private static final String GET_XML = "<query xmlns='jabber:iq:getpic'/>";
 
-	public static final int ACTION_LOGIN = 0x0010;
-	public static final int ACTION_REGISTER = 0x0020;
-	private static final long TIME_SLEEP = 100;
+    public static final int ACTION_LOGIN = 0x0010;
+    public static final int ACTION_REGISTER = 0x0020;
+    private static final long TIME_SLEEP = 100;
     private static final String SERVER = "31.131.18.161";
-	ConnectionConfiguration config;
-	XMPPConnection connection;
-	ChatManager chatManager;
-	DBHelper helper;
-	String login, pass, email;
-	Context context;
-	ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
-	AtomicBoolean isActive = new AtomicBoolean();
-	AtomicBoolean isLogout = new AtomicBoolean();
+    private static final int REPLY_TIMEOUT = 30000;
+    private static final int MAX_TRY_COUNT = 5;
+    private static final int MAX_CONNECT_COUNT = 10;
+    ConnectionConfiguration config;
+    XMPPConnection connection;
+    ChatManager chatManager;
+    DBHelper helper;
+    String login, pass, email;
+    Context context;
+    ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message> messages;
+    AtomicBoolean isActive = new AtomicBoolean();
+    AtomicBoolean isLogout = new AtomicBoolean();
     Notificator notificator;
 
     public XMPPTask(Context context, String login, String pass) {
-		// TODO Auto-generated constructor stub
-		this.login = login;
-		this.pass = pass;
-		this.context = context;
-		isActive.set(true);
-		messages = new ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message>();
+        // TODO Auto-generated constructor stub
+        this.login = login;
+        this.pass = pass;
+        this.context = context;
+        isActive.set(true);
+        messages = new ConcurrentLinkedQueue<com.ra1ph.getpic.message.Message>();
 
         notificator = Notificator.getInstance(context);
 
     }
 
-	@Override
-	protected Void doInBackground(Integer... params) {
-		// TODO Auto-generated method stub
+    @Override
+    protected Void doInBackground(Integer... params) {
+        // TODO Auto-generated method stub
         SmackConfiguration.setPacketReplyTimeout(10000);
-		connect();
-		if(params[0]==ACTION_LOGIN){
-		login(login, pass);
-		helper = DBHelper.getInstance(context);
+        connect();
+        if (params[0] == ACTION_LOGIN) {
+            login(login, pass);
+            helper = DBHelper.getInstance(context);
 
-		while (isActive.get()) {
-			if(isLogout.get()){
-				sendLogoutBroadcast();
-				isActive.set(false);
-				return null;
-			}
-            if(!connection.isConnected())connect();
-            if(!connection.isAuthenticated())login(login,pass);
+            while (isActive.get()) {
+                if (isLogout.get()) {
+                    sendLogoutBroadcast();
+                    isActive.set(false);
+                    return null;
+                }
+                if (!connection.isConnected()) connect();
+                if (!connection.isAuthenticated()) login(login, pass);
 
             /*Presence p = new Presence(Presence.Type.available);
             p.setStatus("Available");
             connection.sendPacket(p);     */
 
-			com.ra1ph.getpic.message.Message mes = null;
-			mes = messages.poll();
-			if (mes != null) {
-				if (mes.type == MessageType.TEXT) {
-					Message message = new Message();
-					message.setBody(mes.body);
-					message.setTo(mes.user_id);
-					connection.sendPacket(message);
-                    sendChatBroadcast(ChatActivity.MESSAGE_SENDED);
-				} else if (mes.type == MessageType.IMAGE) {
-					fileTransfer(new File(context.getExternalCacheDir(), mes.body),
-							mes.user_id);
-				} else if (mes.type == MessageType.GETPIC){
-                    getPicture();
-                }
-                helper.addWritable(mes);
+                com.ra1ph.getpic.message.Message mes = null;
+                mes = messages.poll();
+                if (mes != null) {
+                    if (mes.type == MessageType.TEXT) {
+                        Message message = new Message();
+                        message.setBody(mes.body);
+                        message.setTo(mes.user_id);
+                        connection.sendPacket(message);
+                        sendChatBroadcast(ChatActivity.MESSAGE_SENDED);
+                    } else if (mes.type == MessageType.IMAGE) {
+                        fileTransfer(new File(context.getExternalCacheDir(), mes.body),
+                                mes.user_id);
+                    } else if (mes.type == MessageType.GETPIC) {
+                        getPicture();
+                    }
+                    helper.addWritable(mes);
 
-			} else
-				try {
-					Thread.sleep(TIME_SLEEP);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-		}
-		}else if(params[0]==ACTION_REGISTER) register(login,pass,email);
-		return null;
-	}
+                } else
+                    try {
+                        Thread.sleep(TIME_SLEEP);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+            }
+        } else if (params[0] == ACTION_REGISTER) register(login, pass, email);
+        return null;
+    }
 
     private void getPicture() {
         //To change body of created methods use File | Settings | File Templates.
@@ -158,271 +161,289 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 
     }
 
-    public void register(String username, String pass, String email){
-		AccountManager am = new AccountManager(connection);
-		Map<String, String> attributes = new HashMap<String, String>();
-		attributes.put("username", username);
-		attributes.put("password", pass);
-		attributes.put("email", email);
-		if(am.supportsAccountCreation()){
-		try {
-			am.createAccount(username, pass, attributes);
-			sendRegBroadcast(RegisterActivity.SUCCESS);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Log.d(Constants.DEBUG_TAG, "Register failed!!");
-			e.printStackTrace();
-		}
-		}else {
-			Log.d(Constants.DEBUG_TAG,"Server is not support register!!!");
-			sendRegBroadcast(RegisterActivity.FAIL);
-		}
-	}
-	
-	public void connect() {
-		configure(ProviderManager.getInstance());
-
-		config = new ConnectionConfiguration(SERVER, 5222, SERVER);
-		config.setDebuggerEnabled(true);
-
-		XMPPConnection.DEBUG_ENABLED = true;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			config.setTruststoreType("AndroidCAStore");
-			config.setTruststorePassword(null);
-			config.setTruststorePath(null);
-		} else {
-			config.setTruststoreType("BKS");
-			String path = System.getProperty("javax.net.ssl.trustStore");
-			if (path == null)
-				path = System.getProperty("java.home") + File.separator + "etc"
-						+ File.separator + "security" + File.separator
-						+ "cacerts.bks";
-			config.setTruststorePath(path);
-		}
-
-		connection = new XMPPConnection(config);
-		// connection.DEBUG_ENABLED = true;
-		try {
-			connection.connect();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			isActive.set(false);
-			XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
-			return;
-		}
-		if (!connection.isConnected()) {
-			isActive.set(false);
-			XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
-			return;
-		}
-		
-	}
-	
-	public void login(String login, String pass){
-		try {
-			connection.login(login, pass);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			isActive.set(false);
-			XMPPService.sendBroadcast(context, LoginActivity.FAIL);
-			return;
-		}
-		if (connection.isAuthenticated())
-			XMPPService.sendBroadcast(context, LoginActivity.SUCCESS);
-		else {
-			isActive.set(false);
-			XMPPService.sendBroadcast(context, LoginActivity.FAIL);
-			return;
-		}
-
-		new ServiceDiscoveryManager(connection);
-		FileTransferManager manager = new FileTransferManager(connection);
-		manager.addFileTransferListener(this);
-		connection.addPacketListener(this, null);
-		chatManager = connection.getChatManager();
-	}
-
-	public Chat createChat(String user_id) {
-		return chatManager.createChat(user_id, new MessageListener() {
-
-			@Override
-			public void processMessage(Chat chat, Message message) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-	}
-
-	public void fileTransfer(File file, String user_id) {
-
-		FileTransferManager manager = new FileTransferManager(connection);
-		OutgoingFileTransfer transfer = manager
-				.createOutgoingFileTransfer(user_id);
-		try {
-			transfer.sendFile(file, "foto");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		while (!transfer.isDone()) {
-            if(transfer.getStatus().equals(FileTransfer.Status.in_progress)){
-                double percents = ((int) (transfer.getProgress()*10000)) / 100.0;
-                //percents is 100.0 after 1 cycle
-                sendBroadcast(MainActivity.PROGRESS_UPDATE,(int)percents);
-                Log.i(Constants.DEBUG_TAG, "Filetransfer Progress: "+percents + " Status: "+transfer.getStatus().toString());
+    public void register(String username, String pass, String email) {
+        AccountManager am = new AccountManager(connection);
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put("username", username);
+        attributes.put("password", pass);
+        attributes.put("email", email);
+        if (am.supportsAccountCreation()) {
+            try {
+                am.createAccount(username, pass, attributes);
+                sendRegBroadcast(RegisterActivity.SUCCESS);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                Log.d(Constants.DEBUG_TAG, "Register failed!!");
+                e.printStackTrace();
             }
-			else if (transfer.getStatus().equals(FileTransfer.Status.error)) {
-				System.out.println("ERROR!!! " + transfer.getError());
-			} else if (transfer.getStatus().equals(
-					FileTransfer.Status.cancelled)
-					|| transfer.getStatus().equals(FileTransfer.Status.refused)) {
-				System.out.println("Cancelled!!! " + transfer.getError());
-			}
-			try {
-				Thread.sleep(1000L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		if (transfer.getStatus().equals(FileTransfer.Status.refused)
-				|| transfer.getStatus().equals(FileTransfer.Status.error)
-				|| transfer.getStatus().equals(FileTransfer.Status.cancelled)) {
-			System.out
-					.println("refused cancelled error " + transfer.getError());
-		} else {
-			System.out.println("Success");
-		}
-        sendBroadcast(MainActivity.PHOTO_SENDED);
-	}
+        } else {
+            Log.d(Constants.DEBUG_TAG, "Server is not support register!!!");
+            sendRegBroadcast(RegisterActivity.FAIL);
+        }
+    }
 
-	public void configure(ProviderManager pm) {
+    public void connect() {
+        configure(ProviderManager.getInstance());
+
+        SmackConfiguration.setPacketReplyTimeout(REPLY_TIMEOUT);
+        config = new ConnectionConfiguration(SERVER, 5222, SERVER);
+        config.setDebuggerEnabled(true);
+
+        XMPPConnection.DEBUG_ENABLED = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            config.setTruststoreType("AndroidCAStore");
+            config.setTruststorePassword(null);
+            config.setTruststorePath(null);
+        } else {
+            config.setTruststoreType("BKS");
+            String path = System.getProperty("javax.net.ssl.trustStore");
+            if (path == null)
+                path = System.getProperty("java.home") + File.separator + "etc"
+                        + File.separator + "security" + File.separator
+                        + "cacerts.bks";
+            config.setTruststorePath(path);
+        }
+
+        config.setReconnectionAllowed(true);
+        connection = new XMPPConnection(config);
+        // connection.DEBUG_ENABLED = true;
+        try {
+            connection.connect();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            isActive.set(false);
+            XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
+            return;
+        }
+        if (!connection.isConnected()) {
+            isActive.set(false);
+            XMPPService.sendBroadcast(context, LoginActivity.CONNECTION_FAIL);
+            return;
+        }
+
+    }
+
+    public void login(String login, String pass) {
+        try {
+            connection.login(login, pass);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            isActive.set(false);
+            XMPPService.sendBroadcast(context, LoginActivity.FAIL);
+            return;
+        }
+        if (connection.isAuthenticated())
+            XMPPService.sendBroadcast(context, LoginActivity.SUCCESS);
+        else {
+            isActive.set(false);
+            XMPPService.sendBroadcast(context, LoginActivity.FAIL);
+            return;
+        }
+
+        new ServiceDiscoveryManager(connection);
+        FileTransferManager manager = new FileTransferManager(connection);
+        manager.addFileTransferListener(this);
+        connection.addPacketListener(this, null);
+        chatManager = connection.getChatManager();
+    }
+
+    public Chat createChat(String user_id) {
+        return chatManager.createChat(user_id, new MessageListener() {
+
+            @Override
+            public void processMessage(Chat chat, Message message) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+    }
+
+    public void fileTransfer(File file, String user_id) {
+
+        FileTransferManager manager = new FileTransferManager(connection);
+        int try_count = 0;
+        while (try_count < MAX_TRY_COUNT) {
+            try_count++;
+            OutgoingFileTransfer transfer = manager
+                    .createOutgoingFileTransfer(user_id);
+            try {
+                transfer.sendFile(file, "foto");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            int count_connect=0;
+            double progress=0;
+            while ((!transfer.isDone())&&(count_connect<MAX_CONNECT_COUNT)) {
+                count_connect++;
+                if(progress!=transfer.getProgress()){
+                    progress=transfer.getProgress();
+                    count_connect=0;
+                }
+                if (transfer.getStatus().equals(FileTransfer.Status.in_progress)) {
+                    double percents = ((int) (transfer.getProgress() * 10000)) / 100.0;
+                    //percents is 100.0 after 1 cycle
+                    sendBroadcast(MainActivity.PROGRESS_UPDATE, (int) percents);
+                    Log.i(Constants.DEBUG_TAG, "Filetransfer Progress: " + percents + " Status: " + transfer.getStatus().toString());
+                } else if (transfer.getStatus().equals(FileTransfer.Status.error)) {
+                    System.out.println("ERROR!!! " + transfer.getError());
+                } else if (transfer.getStatus().equals(
+                        FileTransfer.Status.cancelled)
+                        || transfer.getStatus().equals(FileTransfer.Status.refused)) {
+                    System.out.println("Cancelled!!! " + transfer.getError());
+                }
+                if(transfer.getException()!=null){
+                    Log.d(Constants.DEBUG_TAG,transfer.getException().getMessage());
+                    transfer.cancel();
+                    break;
+                }
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (transfer.getStatus().equals(FileTransfer.Status.refused)
+                    || transfer.getStatus().equals(FileTransfer.Status.error)
+                    || transfer.getStatus().equals(FileTransfer.Status.cancelled)) {
+                System.out
+                        .println("refused cancelled error " + transfer.getError());
+            } else {
+                System.out.println("Success");
+                break;
+            }
+        }
+        sendBroadcast(MainActivity.PHOTO_SENDED);
+    }
+
+    public void configure(ProviderManager pm) {
 
         //GetPicService
         pm.addExtensionProvider(GetPicEvent.ELEMENT_ROOT, GetPicEvent.NAMESPACE, new GetpicExtensionProvider());
 
-		// Private Data Storage
-		pm.addIQProvider("query", "jabber:iq:private",
+        // Private Data Storage
+        pm.addIQProvider("query", "jabber:iq:private",
                 new PrivateDataManager.PrivateDataIQProvider());
 
-		// Time
-		try {
-			pm.addIQProvider("query", "jabber:iq:time",
-					Class.forName("org.jivesoftware.smackx.packet.Time"));
-		} catch (ClassNotFoundException e) {
-			Log.w("TestClient",
-					"Can't load class for org.jivesoftware.smackx.packet.Time");
-		}
+        // Time
+        try {
+            pm.addIQProvider("query", "jabber:iq:time",
+                    Class.forName("org.jivesoftware.smackx.packet.Time"));
+        } catch (ClassNotFoundException e) {
+            Log.w("TestClient",
+                    "Can't load class for org.jivesoftware.smackx.packet.Time");
+        }
 
-		// Roster Exchange
-		pm.addExtensionProvider("x", "jabber:x:roster",
-				new RosterExchangeProvider());
+        // Roster Exchange
+        pm.addExtensionProvider("x", "jabber:x:roster",
+                new RosterExchangeProvider());
 
-		// Message Events
-		pm.addExtensionProvider("x", "jabber:x:event",
-				new MessageEventProvider());
+        // Message Events
+        pm.addExtensionProvider("x", "jabber:x:event",
+                new MessageEventProvider());
 
-		// Chat State
-		pm.addExtensionProvider("active",
-				"http://jabber.org/protocol/chatstates",
-				new ChatStateExtension.Provider());
+        // Chat State
+        pm.addExtensionProvider("active",
+                "http://jabber.org/protocol/chatstates",
+                new ChatStateExtension.Provider());
 
-		pm.addExtensionProvider("composing",
-				"http://jabber.org/protocol/chatstates",
-				new ChatStateExtension.Provider());
+        pm.addExtensionProvider("composing",
+                "http://jabber.org/protocol/chatstates",
+                new ChatStateExtension.Provider());
 
-		pm.addExtensionProvider("paused",
-				"http://jabber.org/protocol/chatstates",
-				new ChatStateExtension.Provider());
+        pm.addExtensionProvider("paused",
+                "http://jabber.org/protocol/chatstates",
+                new ChatStateExtension.Provider());
 
-		pm.addExtensionProvider("inactive",
-				"http://jabber.org/protocol/chatstates",
-				new ChatStateExtension.Provider());
+        pm.addExtensionProvider("inactive",
+                "http://jabber.org/protocol/chatstates",
+                new ChatStateExtension.Provider());
 
-		pm.addExtensionProvider("gone",
-				"http://jabber.org/protocol/chatstates",
-				new ChatStateExtension.Provider());
+        pm.addExtensionProvider("gone",
+                "http://jabber.org/protocol/chatstates",
+                new ChatStateExtension.Provider());
 
-		// XHTML
-		pm.addExtensionProvider("html", "http://jabber.org/protocol/xhtml-im",
-				new XHTMLExtensionProvider());
+        // XHTML
+        pm.addExtensionProvider("html", "http://jabber.org/protocol/xhtml-im",
+                new XHTMLExtensionProvider());
 
-		// Group Chat Invitations
-		pm.addExtensionProvider("x", "jabber:x:conference",
-				new GroupChatInvitation.Provider());
+        // Group Chat Invitations
+        pm.addExtensionProvider("x", "jabber:x:conference",
+                new GroupChatInvitation.Provider());
 
-		// Service Discovery # Items
-		pm.addIQProvider("query", "http://jabber.org/protocol/disco#items",
-				new DiscoverItemsProvider());
+        // Service Discovery # Items
+        pm.addIQProvider("query", "http://jabber.org/protocol/disco#items",
+                new DiscoverItemsProvider());
 
-		// Service Discovery # Info
-		pm.addIQProvider("query", "http://jabber.org/protocol/disco#info",
-				new DiscoverInfoProvider());
+        // Service Discovery # Info
+        pm.addIQProvider("query", "http://jabber.org/protocol/disco#info",
+                new DiscoverInfoProvider());
 
-		// Data Forms
-		pm.addExtensionProvider("x", "jabber:x:data", new DataFormProvider());
+        // Data Forms
+        pm.addExtensionProvider("x", "jabber:x:data", new DataFormProvider());
 
-		// MUC User
-		pm.addExtensionProvider("x", "http://jabber.org/protocol/muc#user",
-				new MUCUserProvider());
+        // MUC User
+        pm.addExtensionProvider("x", "http://jabber.org/protocol/muc#user",
+                new MUCUserProvider());
 
-		// MUC Admin
-		pm.addIQProvider("query", "http://jabber.org/protocol/muc#admin",
-				new MUCAdminProvider());
+        // MUC Admin
+        pm.addIQProvider("query", "http://jabber.org/protocol/muc#admin",
+                new MUCAdminProvider());
 
-		// MUC Owner
-		pm.addIQProvider("query", "http://jabber.org/protocol/muc#owner",
-				new MUCOwnerProvider());
+        // MUC Owner
+        pm.addIQProvider("query", "http://jabber.org/protocol/muc#owner",
+                new MUCOwnerProvider());
 
-		// Delayed Delivery
-		pm.addExtensionProvider("x", "jabber:x:delay",
-				new DelayInformationProvider());
+        // Delayed Delivery
+        pm.addExtensionProvider("x", "jabber:x:delay",
+                new DelayInformationProvider());
 
-		// Version
-		try {
-			pm.addIQProvider("query", "jabber:iq:version",
-					Class.forName("org.jivesoftware.smackx.packet.Version"));
-		} catch (ClassNotFoundException e) {
-			// Not sure what's happening here.
-		}
+        // Version
+        try {
+            pm.addIQProvider("query", "jabber:iq:version",
+                    Class.forName("org.jivesoftware.smackx.packet.Version"));
+        } catch (ClassNotFoundException e) {
+            // Not sure what's happening here.
+        }
 
-		// VCard
-		pm.addIQProvider("vCard", "vcard-temp", new VCardProvider());
+        // VCard
+        pm.addIQProvider("vCard", "vcard-temp", new VCardProvider());
 
-		// Offline Message Requests
-		pm.addIQProvider("offline", "http://jabber.org/protocol/offline",
-				new OfflineMessageRequest.Provider());
+        // Offline Message Requests
+        pm.addIQProvider("offline", "http://jabber.org/protocol/offline",
+                new OfflineMessageRequest.Provider());
 
-		// Offline Message Indicator
-		pm.addExtensionProvider("offline",
-				"http://jabber.org/protocol/offline",
-				new OfflineMessageInfo.Provider());
+        // Offline Message Indicator
+        pm.addExtensionProvider("offline",
+                "http://jabber.org/protocol/offline",
+                new OfflineMessageInfo.Provider());
 
-		// Last Activity
-		pm.addIQProvider("query", "jabber:iq:last", new LastActivity.Provider());
+        // Last Activity
+        pm.addIQProvider("query", "jabber:iq:last", new LastActivity.Provider());
 
-		// User Search
-		pm.addIQProvider("query", "jabber:iq:search", new UserSearch.Provider());
+        // User Search
+        pm.addIQProvider("query", "jabber:iq:search", new UserSearch.Provider());
 
-		// SharedGroupsInfo
-		pm.addIQProvider("sharedgroup",
-				"http://www.jivesoftware.org/protocol/sharedgroup",
-				new SharedGroupsInfo.Provider());
+        // SharedGroupsInfo
+        pm.addIQProvider("sharedgroup",
+                "http://www.jivesoftware.org/protocol/sharedgroup",
+                new SharedGroupsInfo.Provider());
 
-		// JEP-33: Extended Stanza Addressing
-		pm.addExtensionProvider("addresses",
-				"http://jabber.org/protocol/address",
-				new MultipleAddressesProvider());
+        // JEP-33: Extended Stanza Addressing
+        pm.addExtensionProvider("addresses",
+                "http://jabber.org/protocol/address",
+                new MultipleAddressesProvider());
 
-		// FileTransfer
-		pm.addIQProvider("si", "http://jabber.org/protocol/si",
-				new StreamInitiationProvider());
+        // FileTransfer
+        pm.addIQProvider("si", "http://jabber.org/protocol/si",
+                new StreamInitiationProvider());
 
-		pm.addIQProvider("query", "http://jabber.org/protocol/bytestreams",
-				new BytestreamsProvider());
+        pm.addIQProvider("query", "http://jabber.org/protocol/bytestreams",
+                new BytestreamsProvider());
 
 		/*
-		 * pm.addIQProvider("open","http://jabber.org/protocol/ibb", new
+         * pm.addIQProvider("open","http://jabber.org/protocol/ibb", new
 		 * IBBProviders.Open());
 		 * 
 		 * pm.addIQProvider("close","http://jabber.org/protocol/ibb", new
@@ -432,171 +453,173 @@ public class XMPPTask extends com.ra1ph.getpic.AsyncTask<Integer, Void, Void>
 		 * IBBProviders.Data());
 		 */
 
-		// Privacy
-		pm.addIQProvider("query", "jabber:iq:privacy", new PrivacyProvider());
+        // Privacy
+        pm.addIQProvider("query", "jabber:iq:privacy", new PrivacyProvider());
 
-		pm.addIQProvider("command", "http://jabber.org/protocol/commands",
-				new AdHocCommandDataProvider());
-		pm.addExtensionProvider("malformed-action",
-				"http://jabber.org/protocol/commands",
-				new AdHocCommandDataProvider.MalformedActionError());
-		pm.addExtensionProvider("bad-locale",
-				"http://jabber.org/protocol/commands",
-				new AdHocCommandDataProvider.BadLocaleError());
-		pm.addExtensionProvider("bad-payload",
-				"http://jabber.org/protocol/commands",
-				new AdHocCommandDataProvider.BadPayloadError());
-		pm.addExtensionProvider("bad-sessionid",
-				"http://jabber.org/protocol/commands",
-				new AdHocCommandDataProvider.BadSessionIDError());
-		pm.addExtensionProvider("session-expired",
-				"http://jabber.org/protocol/commands",
-				new AdHocCommandDataProvider.SessionExpiredError());
-	}
+        pm.addIQProvider("command", "http://jabber.org/protocol/commands",
+                new AdHocCommandDataProvider());
+        pm.addExtensionProvider("malformed-action",
+                "http://jabber.org/protocol/commands",
+                new AdHocCommandDataProvider.MalformedActionError());
+        pm.addExtensionProvider("bad-locale",
+                "http://jabber.org/protocol/commands",
+                new AdHocCommandDataProvider.BadLocaleError());
+        pm.addExtensionProvider("bad-payload",
+                "http://jabber.org/protocol/commands",
+                new AdHocCommandDataProvider.BadPayloadError());
+        pm.addExtensionProvider("bad-sessionid",
+                "http://jabber.org/protocol/commands",
+                new AdHocCommandDataProvider.BadSessionIDError());
+        pm.addExtensionProvider("session-expired",
+                "http://jabber.org/protocol/commands",
+                new AdHocCommandDataProvider.SessionExpiredError());
+    }
 
-	public void addMessage(com.ra1ph.getpic.message.Message mes) {
-		messages.add(mes);
-	}
+    public void addMessage(com.ra1ph.getpic.message.Message mes) {
+        messages.add(mes);
+    }
 
-	@Override
-	public void fileTransferRequest(final FileTransferRequest request) {
-		// TODO Auto-generated method stub
-		new Thread() {
-			@Override
-			public void run() {
-				IncomingFileTransfer transfer = request.accept();
-				String name = UUID.randomUUID().toString();
-				File file = new File(context.getExternalCacheDir(), name);
-				try {
-					transfer.recieveFile(file);
-					boolean isOK = true;
-					while (!transfer.isDone()) {
-						try {
-							Thread.sleep(1000L);
-						} catch (Exception e) {
-							isOK = false;
-							Log.e(Constants.DEBUG_TAG, e.getMessage());
-						}
-						if (transfer.getStatus().equals(
-								FileTransfer.Status.error)) {
-							isOK = false;
-							Log.e(Constants.DEBUG_TAG, transfer.getError() + "");
-						}
-						if (transfer.getException() != null) {
-							isOK = false;
-							transfer.getException().printStackTrace();
-						}
-					}
-					if (isOK) {
-                        try{
-                        }catch(Exception e){
+    @Override
+    public void fileTransferRequest(final FileTransferRequest request) {
+        // TODO Auto-generated method stub
+        new Thread() {
+            @Override
+            public void run() {
+                IncomingFileTransfer transfer = request.accept();
+                String name = UUID.randomUUID().toString();
+                File file = new File(context.getExternalCacheDir(), name);
+                try {
+                    transfer.recieveFile(file);
+                    boolean isOK = true;
+                    while (!transfer.isDone()) {
+                        try {
+                            Thread.sleep(1000L);
+                        } catch (Exception e) {
+                            isOK = false;
+                            Log.e(Constants.DEBUG_TAG, e.getMessage());
+                        }
+                        if (transfer.getStatus().equals(
+                                FileTransfer.Status.error)) {
+                            isOK = false;
+                            Log.e(Constants.DEBUG_TAG, transfer.getError() + "");
+                        }
+                        if (transfer.getException() != null) {
+                            isOK = false;
+                            transfer.getException().printStackTrace();
+                        }
+                    }
+                    if (isOK) {
+                        try {
+                        } catch (Exception e) {
 
                         }
-						com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
+                        com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
                                 request.getDescription(), name,
-								com.ra1ph.getpic.message.Message.DIRECTION_IN,
-								Writable.ADD);
-						mes.type = MessageType.IMAGE;
-						helper.addWritable(mes);
-						User user = new User(request.getDescription(), name,
-								Writable.ADD);
-						helper.addWritable(user);
-						loadMap(name);
-						sendBroadcast(MainActivity.PHOTO_RECEIVED);
-						Log.d(Constants.DEBUG_TAG, "is OK");
+                                com.ra1ph.getpic.message.Message.DIRECTION_IN,
+                                Writable.ADD);
+                        mes.type = MessageType.IMAGE;
+                        helper.addWritable(mes);
+                        User user = new User(request.getDescription(), name,
+                                Writable.ADD);
+                        helper.addWritable(user);
+                        loadMap(name);
+                        sendBroadcast(MainActivity.PHOTO_RECEIVED);
+                        Log.d(Constants.DEBUG_TAG, "is OK");
                         notificator.notifyImage(request.getRequestor());
-					}
+                    }
 
-				} catch (Exception e) {
-					Log.e(Constants.DEBUG_TAG, e.getMessage());
-				}
-			};
-		}.start();
-	}
+                } catch (Exception e) {
+                    Log.e(Constants.DEBUG_TAG, e.getMessage());
+                }
+            }
 
-	private void loadMap(String filename){
-		String path = context.getCacheDir().getPath()+"/"+filename;
-		EXIFProcessor exif = new EXIFProcessor(path);
-		MapRequest request = new MapRequest(); 
-		request.latitude = exif.getLatitude();
-		request.longitude = exif.getLongitude();
-		request.zoom = 3;
-		MapTask mapTask = new MapTask(context, request, filename);
-		mapTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	}
-	
-	@Override
-	public void chatCreated(Chat chat, boolean arg1) {
-		// TODO Auto-generated method stub
-		chat.addMessageListener(this);
-	}
+            ;
+        }.start();
+    }
 
-	@Override
-	public void processMessage(Chat arg0, Message arg1) {
-		// TODO Auto-generated method stub
-		Message message = arg1;
-		if (message.getBody() != null) {
-			com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
-					message.getFrom(), message.getBody(),
-					com.ra1ph.getpic.message.Message.DIRECTION_IN, Writable.ADD);
-			helper.addWritable(mes);
-		}
-	}
+    private void loadMap(String filename) {
+        String path = context.getCacheDir().getPath() + "/" + filename;
+        EXIFProcessor exif = new EXIFProcessor(path);
+        MapRequest request = new MapRequest();
+        request.latitude = exif.getLatitude();
+        request.longitude = exif.getLongitude();
+        request.zoom = 3;
+        MapTask mapTask = new MapTask(context, request, filename);
+        mapTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
 
-	@Override
-	public void processPacket(Packet arg0) {
-		// TODO Auto-generated method stub
-		if (arg0 instanceof Message) {
-			Log.d(Constants.DEBUG_TAG, "Packet in!");
-			Message message = (Message) arg0;
-            if (message.getExtension(GetPicEvent.NAMESPACE)!=null){
+    @Override
+    public void chatCreated(Chat chat, boolean arg1) {
+        // TODO Auto-generated method stub
+        chat.addMessageListener(this);
+    }
+
+    @Override
+    public void processMessage(Chat arg0, Message arg1) {
+        // TODO Auto-generated method stub
+        Message message = arg1;
+        if (message.getBody() != null) {
+            com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
+                    message.getFrom(), message.getBody(),
+                    com.ra1ph.getpic.message.Message.DIRECTION_IN, Writable.ADD);
+            helper.addWritable(mes);
+        }
+    }
+
+    @Override
+    public void processPacket(Packet arg0) {
+        // TODO Auto-generated method stub
+        if (arg0 instanceof Message) {
+            Log.d(Constants.DEBUG_TAG, "Packet in!");
+            Message message = (Message) arg0;
+            if (message.getExtension(GetPicEvent.NAMESPACE) != null) {
                 GetPicEvent event = (GetPicEvent) message.getExtension(GetPicEvent.NAMESPACE);
-                if(event.getError()!=null){
+                if (event.getError() != null) {
                     Log.d(Constants.DEBUG_TAG, event.getError());
                     sendErrorBroadcast(event.getError());
                     sendBroadcast(MainActivity.PHOTO_RECEIVED);
                 }
-            }else if (message.getBody() != null) {
-				com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
-						message.getFrom(), message.getBody(),
-						com.ra1ph.getpic.message.Message.DIRECTION_IN,
-						Writable.ADD);
-				helper.addWritable(mes);
-                notificator.notifyText(message.getFrom(),message.getBody());
-			}
-		}
-	}
+            } else if (message.getBody() != null) {
+                com.ra1ph.getpic.message.Message mes = new com.ra1ph.getpic.message.Message(
+                        message.getFrom(), message.getBody(),
+                        com.ra1ph.getpic.message.Message.DIRECTION_IN,
+                        Writable.ADD);
+                helper.addWritable(mes);
+                notificator.notifyText(message.getFrom(), message.getBody());
+            }
+        }
+    }
 
-	private void sendBroadcast(int ACTION) {
-		Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
-		intent.putExtra(MainActivity.KEY_ACTION, ACTION);
-		context.sendBroadcast(intent);
-	}
+    private void sendBroadcast(int ACTION) {
+        Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
+        intent.putExtra(MainActivity.KEY_ACTION, ACTION);
+        context.sendBroadcast(intent);
+    }
 
     private void sendErrorBroadcast(String ERROR) {
         Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
         intent.putExtra(MainActivity.KEY_ACTION, MainActivity.ERROR);
-        intent.putExtra(MainActivity.ERROR_CODE,ERROR);
+        intent.putExtra(MainActivity.ERROR_CODE, ERROR);
         context.sendBroadcast(intent);
     }
 
     private void sendBroadcast(int ACTION, int progress) {
         Intent intent = new Intent(MainActivity.BROADCAST_ACTION);
         intent.putExtra(MainActivity.KEY_ACTION, ACTION);
-        intent.putExtra(MainActivity.PROGRESS_VALUE,progress);
+        intent.putExtra(MainActivity.PROGRESS_VALUE, progress);
         context.sendBroadcast(intent);
     }
-	
-	private void sendLogoutBroadcast() {
-		Intent intent = new Intent(SuperActivity.LOGOUT_BROADCAST_ACTION);
-		context.sendBroadcast(intent);
-	}
-	
-	private void sendRegBroadcast(int ACTION) {
-		Intent intent = new Intent(RegisterActivity.REG_BROADCAST_ACTION);
-		intent.putExtra(RegisterActivity.REG, ACTION);
-		context.sendBroadcast(intent);
-	}
+
+    private void sendLogoutBroadcast() {
+        Intent intent = new Intent(SuperActivity.LOGOUT_BROADCAST_ACTION);
+        context.sendBroadcast(intent);
+    }
+
+    private void sendRegBroadcast(int ACTION) {
+        Intent intent = new Intent(RegisterActivity.REG_BROADCAST_ACTION);
+        intent.putExtra(RegisterActivity.REG, ACTION);
+        context.sendBroadcast(intent);
+    }
 
     private void sendChatBroadcast(int ACTION) {
         Intent intent = new Intent(ChatActivity.BROADCAST_ACTION);
